@@ -1,0 +1,15 @@
+#nav, #rigby-content {
+    min-height: 100vh;
+}
+
+#nav {
+    max-width: 250px;
+    min-width: 250px;
+    float: left;
+}
+
+#rigby-content {
+    margin-left: 251px;
+    background-color: #f8f8f8;
+    padding: 20px;
+}

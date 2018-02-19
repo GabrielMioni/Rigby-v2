@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
+{% set currentPath = currentPath|lower|trim('/') %}
+{% set activeClass = ' class=active ' %}
+
+{% block body %}
+    <div id="top-bar">
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
+                    Hi {{ app.user.username }} <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ logout_path() }}">Log Out</a></li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="nav">
+        <ul class="list-unstyled components">
+            <li{% if currentPath == 'dashboard' %} {{ activeClass }} {% endif %}>Dashboard</li>
+            <li{% if currentPath == 'reviews' %} {{ activeClass }} {% endif %}>Reviews</li>
+            <li{% if currentPath == 'products' %} {{ activeClass }} {% endif %}>Products</li>
+            <li{% if currentPath == 'users' %} {{ activeClass }} {% endif %}>Users</li>
+            <li{% if currentPath == 'settings' %} {{ activeClass }} {% endif %}>Settings</li>
+        </ul>
+    </div>
+    <div id="rigby-content" class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}
