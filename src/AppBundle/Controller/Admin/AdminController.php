@@ -45,16 +45,12 @@ class AdminController extends Controller
                                 ));
     }
 
+    /**
+     * @Route("/reviews", name="reviews")
+     */
+    public function ReviewsAction()
+    {
+        return $this->render('admin/reviews.html.twig');
+    }
+
 }
-
-
-
-/*
-        echo '<pre>';
-        print_r($weeklyAvg);
-        echo '</pre>';
-
-        echo '<pre>';
-        print_r($recentReviews);
-        echo '</pre>';
- */
