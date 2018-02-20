@@ -3,13 +3,52 @@
 }
 
 #nav {
-    max-width: 250px;
-    min-width: 250px;
+    max-width: 180px;
+    min-width: 180px;
     float: left;
 }
 
 #rigby-content {
-    margin-left: 251px;
+    margin-left: 180px;
     background-color: #f8f8f8;
     padding: 20px;
+    width: 87vw;
+}
+
+#top-bar {
+    height: 35px;
+}
+
+#nav, #top-bar, #top-bar button {
+    background-color: #464752;
+    color: #EAF5F1;
+}
+
+#top-bar .dropdown, #top-bar .dropup {
+    position: absolute;
+    right: 15px;
+}
+
+#nav li {
+    width: 100%;
+    font-size: 20px;
+    padding: 10px;
+    position: relative;
+}
+
+#nav li.active {
+    background-color: #FFA500;
+}
+
+
+#nav li.active::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 25px solid transparent;
+    border-right: 25px solid #F8F8F8;
+    border-bottom: 25px solid transparent;
+    right: 0;
+    top: 0;
 }
