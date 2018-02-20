@@ -1,0 +1,15 @@
+{% extends "admin/admin-base.html.twig" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/rigby-admin.css') }}" >
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div>Oh, Hi Marc.</div>
+{% endblock %}

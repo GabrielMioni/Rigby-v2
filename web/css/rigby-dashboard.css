@@ -1,0 +1,90 @@
+#rigby-weekly, #rigby-stats, #rigby-recent {
+    width: 500px;
+    padding: 30px;
+    margin-bottom: 20px;
+    background-color: #FFFFFF;
+}
+
+#rigby-weekly {
+    height: 250px;
+    padding: 40px 0 0 50px;
+}
+
+#rigby-stats .row {
+    max-height: 40px;
+}
+.bold {
+    font-weight: bold;
+}
+.weekly-count, .weekly-legend {
+    height: 100%;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    vertical-align: top;
+    position: relative;
+}
+.weekly-count {
+    width: 55px;
+}
+.weekly-legend {
+    width: 1%;
+}
+
+.recent-review {
+    padding: 0 5px 20px 5px;
+}
+
+.odd {
+    background-color: #F2F2F2;
+}
+
+.recent-header {
+    position: relative;
+    margin: 0 0 10px 0;
+}
+
+.recent-header::after {
+    content: "";
+    background: #337AB7;
+    position: relative;
+    bottom: 0;
+    left: 15px;
+    height: 1px;
+    width: 90%;
+}
+
+.rigby-star {
+    background-image: url('../images/star-full24.png');
+    height: 15px;
+    width: 15px;
+    display: inline-block;
+    background-size: cover;
+}
+
+.bar-wrapper {
+    height: 80%;
+    position: relative;
+}
+.bar {
+    width: 16px;
+    position: absolute;
+    bottom: 0;
+}
+.date {
+    position: absolute;
+    display: block;
+    height: 20%;
+    /* border: 1px solid red; */
+    bottom: 0;
+}
+.tick {
+    border-top: 1px dotted #C4C4C4;
+    height: 16%;
+    width: 400px;
+}
+.tick p {
+    top: -20px;
+    left: -25px;
+    position: relative;
+}

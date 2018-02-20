@@ -3,94 +3,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/rigby-admin.css') }}" >
-    <style>
-        .box-shadow {
-            box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .10)
-        }
-        #rigby-weekly, #rigby-stats, #rigby-recent {
-            width: 500px;
-            padding: 30px;
-            margin-bottom: 20px;
-            background-color: white;
-        }
-
-        #rigby-weekly {
-            height: 250px;
-        }
-
-        #rigby-stats .row {
-            max-height: 40px;
-        }
-        .bold {
-            font-weight: bold;
-        }
-        .weekly-count, .weekly-legend {
-            height: 100%;
-            display: inline-block;
-            padding: 0;
-            margin: 0;
-            vertical-align: top;
-            position: relative;
-        }
-        .weekly-count {
-            width: 55px;
-        }
-        .weekly-legend {
-            width: 1%;
-        }
-
-        .recent-review {
-            padding: 0 5px 20px 5px;
-        }
-
-        .odd {
-            background-color: #F2F2F2;
-        }
-
-        .recent-header {
-            position: relative;
-            margin: 0 0 10px 0;
-        }
-
-        .recent-header::after {
-            content: "";
-            background: #337AB7;
-            position: relative;
-            bottom: 0;
-            left: 15px;
-            height: 1px;
-            width: 90%;
-        }
-
-        .bar-wrapper {
-            height: 80%;
-            position: relative;
-        }
-        .bar {
-            width: 16px;
-            position: absolute;
-            bottom: 0;
-        }
-        .date {
-            position: absolute;
-            display: block;
-            height: 20%;
-            /* border: 1px solid red; */
-            bottom: 0;
-        }
-        .tick {
-            border-top: 1px dotted #C4C4C4;
-            /* height: 20%; */
-            height: 16%;
-            width: 400px;
-        }
-        .tick p {
-            top: -20px;
-            left: -25px;
-            position: relative;
-        }
-    </style>
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/rigby-dashboard.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -147,10 +61,10 @@
                 {% for review in recentReviews %}
                     <div class="recent-review {% if loop.index is divisibleby(2) %}even{% else %}odd{% endif %}">
                         <div class="row recent-header">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <span class="bold">Email</span><br> {{ review.email }}
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <span class="bold">Stars</span> <br> {{ review.stars|raw }}
                             </div>
                             <div class="col-md-4">
