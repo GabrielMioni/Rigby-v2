@@ -172,4 +172,9 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
 
         return json_encode($recentReview);
     }
+
+    function reviewSearch()
+    {
+
+    }
 }

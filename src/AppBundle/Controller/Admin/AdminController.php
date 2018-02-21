@@ -3,9 +3,15 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Request;
+
 
 class AdminController extends Controller
 {
@@ -50,7 +56,18 @@ class AdminController extends Controller
      */
     public function ReviewsAction()
     {
-        return $this->render('admin/reviews.html.twig');
+        $review = new Review();
+
+        $searchForm = $this->createFormBuilder($review)
+                            ->add('id', IntegerType::class, array('required'=>false))
+                            ->add('rating', IntegerType::class, array('required'=>false))
+                            ->add('title', TextType::class, array('required'=>false))
+                            ->add('reviewer_name', TextType::class, array('label'=>'Name', 'required'=>false))
+                            ->add('reviewer_email', TextType::class, array('label'=>'Email', 'required'=>false))
+                            ->add('search', SubmitType::class, array('label' => 'search'))
+                            ->getForm();
+
+        return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
     }
 
 }

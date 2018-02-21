@@ -12,4 +12,24 @@
 
 {% block content %}
     <div>Oh, Hi Marc.</div>
+    {{ form_start(form) }}
+
+        {{ form_errors(form) }}
+
+        <div class="col-md">
+            {{ form_label(form.id) }}
+            {{ form_widget(form.id) }}
+        </div>
+
+        <div class="col-md">
+
+        </div>
+
+        <div class="col-md">
+
+        </div>
+
+    {{ form_widget(form) }}
+
+    {{ form_end(form) }}
 {% endblock %}
