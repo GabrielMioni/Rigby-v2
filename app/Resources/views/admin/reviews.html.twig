@@ -1,9 +1,23 @@
 {% extends "admin/admin-base.html.twig" %}
 
+{#
+{% form_theme form 'bootstrap_4_horizontal_layout.html.twig' %}
+#}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/rigby-admin.css') }}" >
+
+    <style>
+        #review-search .row {
+            max-height: 80px;
+        }
+        #review-search button {
+            position: relative;
+            left: 15px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -12,24 +26,34 @@
 
 {% block content %}
     <div>Oh, Hi Marc.</div>
-    {{ form_start(form) }}
 
+    {{ form_start(form, {'attr': {'id': 'review-search'}}) }}
         {{ form_errors(form) }}
+        <div class="row">
+            <div class="col-md-2">
+                {{ form_label(form.id) }}
+                {{ form_widget(form.id) }}
+            </div>
+            <div class="col-md-2">
+                {{ form_label(form.rating) }}
+                {{ form_widget(form.rating) }}
+            </div>
 
-        <div class="col-md">
-            {{ form_label(form.id) }}
-            {{ form_widget(form.id) }}
+            <div class="col-md-2">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+            </div>
+            <div class="col-md-2">
+                {{ form_label(form.reviewer_name) }}
+                {{ form_widget(form.reviewer_name) }}
+            </div>
+            <div class="col-md-2">
+                {{ form_label(form.reviewer_email) }}
+                {{ form_widget(form.reviewer_email) }}
+            </div>
         </div>
-
-        <div class="col-md">
-
+        <div class="row">
+            {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
         </div>
-
-        <div class="col-md">
-
-        </div>
-
-    {{ form_widget(form) }}
-
     {{ form_end(form) }}
 {% endblock %}
