@@ -173,8 +173,41 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
         return json_encode($recentReview);
     }
 
-    function reviewSearch()
+    function reviewSearch(array $filters, $generalSearch = null)
     {
+        if (empty($filters) && $generalSearch === null)
+        {
+            $result = $this->createQueryBuilder('review')
+                ->orderBy('review.created')
+                ->getQuery()
+                ->getArrayResult();
 
+            return json_encode($result, true);
+        }
+
+        $generalSearch = $generalSearch === null || trim($generalSearch) === '' ? '%' : $this->formatSearchWildcard($generalSearch);
+
+        $query = $this->createQueryBuilder('review')
+            ->andWhere('review.title LIKE :generalSearch')
+            ->orWhere('review.reviewerName LIKE :generalSearch')
+            ->orWhere('review.reviewerEmail LIKE :generalSearch')
+            ->orWhere('review.reviewContent LIKE :generalSearch')
+            ->orWhere('review.reviewProduct LIKE :generalSearch');
+
+        foreach ($filters as $filterKey => $filter)
+        {
+            $query->andWhere("review.$filterKey =':$filterKey'")->setParameter($filterKey, $filter);
+        }
+
+        $query->setParameter('generalSearch', $generalSearch);
+
+        $result = $query->getQuery()->getArrayResult();
+
+        return json_encode($result, true);
+    }
+
+    protected function formatSearchWildcard($value)
+    {
+        return '%' . trim( str_replace(' ', '%', $value) ) . '%';
     }
 }
