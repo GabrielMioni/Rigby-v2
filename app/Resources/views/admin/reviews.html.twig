@@ -30,6 +30,12 @@
     {{ form_start(form, {'attr': {'id': 'review-search'}}) }}
         {{ form_errors(form) }}
         <div class="row">
+            <div class="col-md-10">
+                {{ form_label(form.search_reviews) }}
+                {{ form_widget(form.search_reviews) }}
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-2">
                 {{ form_label(form.id) }}
                 {{ form_widget(form.id) }}
