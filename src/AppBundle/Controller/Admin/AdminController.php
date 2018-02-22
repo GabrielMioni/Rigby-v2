@@ -6,11 +6,9 @@ use AppBundle\Entity\Review;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -55,11 +53,12 @@ class AdminController extends Controller
     /**
      * @Route("/reviews", name="reviews")
      */
-    public function ReviewsAction()
+    public function ReviewsAction(Request $request)
     {
         $review = new Review();
 
         $searchForm = $this->createFormBuilder($review)
+                            ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
                             ->add('id', IntegerType::class, array('required'=>false))
                             ->add(  'rating', ChoiceType::class, array(
                                     'required' => false,
@@ -67,8 +66,24 @@ class AdminController extends Controller
                             ->add('title', TextType::class, array('required'=>false))
                             ->add('reviewer_name', TextType::class, array('label'=>'Name', 'required'=>false))
                             ->add('reviewer_email', TextType::class, array('label'=>'Email', 'required'=>false))
-                            ->add('search', SubmitType::class, array('label' => 'Search'))
+                            ->add('search', SubmitType::class, array('label' => 'Submit Search'))
                             ->getForm();
+
+        $searchForm->handleRequest($request);
+
+        if ($searchForm->isSubmitted())
+        {
+            $generalSearch = $searchForm->get("search_reviews")->getData();
+            $filers = array();
+
+            $em = $this->getDoctrine()->getManager();
+
+            $searchResults = $em->getRepository('AppBundle:Review')->reviewSearch($filers, $generalSearch);
+            $searchResults = json_decode($searchResults);
+
+            dump($searchResults);
+
+        }
 
         return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
     }
