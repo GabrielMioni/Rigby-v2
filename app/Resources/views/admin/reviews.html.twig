@@ -17,7 +17,29 @@
             position: relative;
             left: 15px;
         }
+        #add-criteria {
+            display: none;
+        }
+
+        #searchFields .criteria.row {
+            height: 40px;
+        }
+
+        #searchFields select, #searchFields input[type='text'] {
+            min-width: 100%;
+        }
+
+        #searchFields select {
+            margin-top: 5px;
+        }
+
+        #searchFields #generalSearchRow {
+            max-height: 80px;
+        }
+
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script rel="script" src="{{ asset('js/rigby-review.js') }}" ></script>
 {% endblock %}
 
 {% block body %}
@@ -29,36 +51,38 @@
 
     {{ form_start(form, {'attr': {'id': 'review-search'}}) }}
         {{ form_errors(form) }}
-        <div class="row">
-            <div class="col-md-10">
-                {{ form_label(form.search_reviews) }}
-                {{ form_widget(form.search_reviews) }}
+        <div id="searchFields">
+            <div id="generalSearchRow" class="row">
+                <div class="col-md-10">
+                    {{ form_label(form.search_reviews) }}
+                    {{ form_widget(form.search_reviews) }}
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-2">
-                {{ form_label(form.id) }}
-                {{ form_widget(form.id) }}
-            </div>
-            <div class="col-md-2">
-                {{ form_label(form.rating) }}
-                {{ form_widget(form.rating) }}
-            </div>
+            {#
+            <div class="row">
+                <div class="col-md-10">
+                    {{ form_label(form.rating) }}
+                    {{ form_widget(form.rating) }}
+                </div>
 
-            <div class="col-md-2">
-                {{ form_label(form.title) }}
-                {{ form_widget(form.title) }}
+                <div class="col-md-2">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_label(form.reviewer_name) }}
+                    {{ form_widget(form.reviewer_name) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_label(form.reviewer_email) }}
+                    {{ form_widget(form.reviewer_email) }}
+                </div>
             </div>
-            <div class="col-md-2">
-                {{ form_label(form.reviewer_name) }}
-                {{ form_widget(form.reviewer_name) }}
-            </div>
-            <div class="col-md-2">
-                {{ form_label(form.reviewer_email) }}
-                {{ form_widget(form.reviewer_email) }}
-            </div>
+            #}
         </div>
         <div class="row">
+            <div class="js-add-criteria" data-url="{{ absolute_url('ajaxAddCriteria') }}"></div>
+            <button id="add-criteria" class="btn btn-info">Add Criteria</button>
             {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
         </div>
     {{ form_end(form) }}
