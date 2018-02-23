@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -59,13 +60,15 @@ class AdminController extends Controller
 
         $searchForm = $this->createFormBuilder($review)
                             ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
-                            ->add('id', IntegerType::class, array('required'=>false))
-                            ->add(  'rating', ChoiceType::class, array(
+            /*
+                             ->add('id', IntegerType::class, array('required'=>false))
+                             ->add(  'rating', ChoiceType::class, array(
                                     'required' => false,
                                     'choices'  => array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5)))
                             ->add('title', TextType::class, array('required'=>false))
                             ->add('reviewer_name', TextType::class, array('label'=>'Name', 'required'=>false))
                             ->add('reviewer_email', TextType::class, array('label'=>'Email', 'required'=>false))
+            */
                             ->add('search', SubmitType::class, array('label' => 'Submit Search'))
                             ->getForm();
 
@@ -73,6 +76,10 @@ class AdminController extends Controller
 
         if ($searchForm->isSubmitted())
         {
+            $data = $searchForm->getData();
+
+            dump($data);
+
             $generalSearch = $searchForm->get("search_reviews")->getData();
             $filers = array();
 
@@ -88,4 +95,24 @@ class AdminController extends Controller
         return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
     }
 
+    /**
+     * @Route("/ajaxAddCriteria", name="addCriteria")
+     */
+    public function ReviewFilterAddCriteriaAction(Request $request)
+    {
+        $isAjax = $request->isXmlHttpRequest();
+
+        if ($isAjax === false)
+        {
+            die();
+        }
+
+        $postData = $request->request->get('contact');
+
+        $number = $postData['number'];
+        $criteria = $postData['criteria'];
+        $operator = $postData['operator'];
+
+        return $this->render('admin/reviews.search.criteria.html.twig', array($number, $criteria, $operator));
+    }
 }
