@@ -58,27 +58,9 @@
                     {{ form_widget(form.search_reviews) }}
                 </div>
             </div>
-            {#
-            <div class="row">
-                <div class="col-md-10">
-                    {{ form_label(form.rating) }}
-                    {{ form_widget(form.rating) }}
-                </div>
-
-                <div class="col-md-2">
-                    {{ form_label(form.title) }}
-                    {{ form_widget(form.title) }}
-                </div>
-                <div class="col-md-2">
-                    {{ form_label(form.reviewer_name) }}
-                    {{ form_widget(form.reviewer_name) }}
-                </div>
-                <div class="col-md-2">
-                    {{ form_label(form.reviewer_email) }}
-                    {{ form_widget(form.reviewer_email) }}
-                </div>
-            </div>
-            #}
+            {{ form_widget(form.type) }}
+            {{ form_widget(form.operator) }}
+            {{ form_widget(form.value) }}
         </div>
         <div class="row">
             <div class="js-add-criteria" data-url="{{ absolute_url('ajaxAddCriteria') }}"></div>

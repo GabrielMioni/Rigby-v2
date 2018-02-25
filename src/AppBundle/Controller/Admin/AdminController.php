@@ -6,7 +6,7 @@ use AppBundle\Entity\Review;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -60,15 +60,43 @@ class AdminController extends Controller
 
         $searchForm = $this->createFormBuilder($review)
                             ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
-            /*
-                             ->add('id', IntegerType::class, array('required'=>false))
-                             ->add(  'rating', ChoiceType::class, array(
-                                    'required' => false,
-                                    'choices'  => array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5)))
-                            ->add('title', TextType::class, array('required'=>false))
-                            ->add('reviewer_name', TextType::class, array('label'=>'Name', 'required'=>false))
-                            ->add('reviewer_email', TextType::class, array('label'=>'Email', 'required'=>false))
-            */
+                            ->add('type', CollectionType::class, array(
+                                'mapped' => false,
+                                'allow_add' => true,
+                                'required'   => false,
+                                'entry_type'   => ChoiceType::class,
+                                'entry_options'  => array(
+                                    'choices'  => array(
+                                        'Title'     => 'title',
+                                        'Name'      => 'name',
+                                        'Email'     => 'email',
+                                        'Content'   => 'content',
+                                        'Product'   => 'product',
+                                        'Created'   => 'created',
+                                    ),
+                                ),
+                            ))
+                            ->add('operator', CollectionType::class, array(
+                                'mapped' => false,
+                                'allow_add' => true,
+                                'required'   => false,
+                                'entry_type'   => ChoiceType::class,
+                                'entry_options'  => array(
+                                    'choices'  => array(
+                                        'Contains'              => 1,
+                                        'Doesn\'nt Contain'     => 2,
+                                        'Equal'                 => 3,
+                                        'Not Equal'             => 4,
+                                        'Regular Expression'    => 5,
+                                    ),
+                                ),
+                            ))
+                            ->add('value', CollectionType::class, array(
+                                'mapped'        => false,
+                                'allow_add'     => true,
+                                'required'      => false,
+                                'entry_type'    => TextType::class,
+                            ))
                             ->add('search', SubmitType::class, array('label' => 'Submit Search'))
                             ->getForm();
 
@@ -78,9 +106,16 @@ class AdminController extends Controller
         {
             $data = $searchForm->getData();
 
-            dump($data);
-
             $generalSearch = $searchForm->get("search_reviews")->getData();
+
+            $type = $searchForm->get("type")->getData();
+            $operator = $searchForm->get("operator")->getData();
+            $value = $searchForm->get("value")->getData();
+
+            dump($type);
+            dump($operator);
+            dump($value);
+
             $filers = array();
 
             $em = $this->getDoctrine()->getManager();
