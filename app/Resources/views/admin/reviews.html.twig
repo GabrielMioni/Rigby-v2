@@ -36,6 +36,9 @@
         #searchFields #generalSearchRow {
             max-height: 80px;
         }
+        .filter.row {
+            height: 30px;
+        }
 
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -53,17 +56,34 @@
         {{ form_errors(form) }}
         <div id="searchFields">
             <div id="generalSearchRow" class="row">
-                <div class="col-md-10">
+                <div class="col-md-12">
                     {{ form_label(form.search_reviews) }}
                     {{ form_widget(form.search_reviews) }}
                 </div>
             </div>
-            {{ form_widget(form.type) }}
-            {{ form_widget(form.operator) }}
-            {{ form_widget(form.value) }}
+        </div>
+        <div id="filterFields">
+            {% for t in form.type %}
+                <div class="filter row">
+                    <div class="col-md-4">
+                        {{ form_widget(t) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form_widget( form.operator[ loop.index0 ]) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form_widget( form.value[ loop.index0 ]) }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
         <div class="row">
-            <div class="js-add-criteria" data-url="{{ absolute_url('ajaxAddCriteria') }}"></div>
+            {% if form.type|length <= 0 %}
+                {{ form_widget(form.type) }}
+                {{ form_widget(form.operator) }}
+                {{ form_widget(form.value) }}
+            {% endif %}
+            <div class="js-add-criteria" data-url="{{ absolute_url('ajaxAddFilterInput') }}"></div>
             <button id="add-criteria" class="btn btn-info">Add Criteria</button>
             {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
         </div>
