@@ -56,49 +56,7 @@ class AdminController extends Controller
      */
     public function ReviewsAction(Request $request)
     {
-        $review = new Review();
-
-        $searchForm = $this->createFormBuilder($review)
-                            ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
-                            ->add('type', CollectionType::class, array(
-                                'mapped' => false,
-                                'allow_add' => true,
-                                'required'   => false,
-                                'entry_type'   => ChoiceType::class,
-                                'entry_options'  => array(
-                                    'choices'  => array(
-                                        'Title'     => 'title',
-                                        'Name'      => 'name',
-                                        'Email'     => 'email',
-                                        'Content'   => 'content',
-                                        'Product'   => 'product',
-                                        'Created'   => 'created',
-                                    ),
-                                ),
-                            ))
-                            ->add('operator', CollectionType::class, array(
-                                'mapped' => false,
-                                'allow_add' => true,
-                                'required'   => false,
-                                'entry_type'   => ChoiceType::class,
-                                'entry_options'  => array(
-                                    'choices'  => array(
-                                        'Contains'              => 1,
-                                        'Doesn\'nt Contain'     => 2,
-                                        'Equal'                 => 3,
-                                        'Not Equal'             => 4,
-                                        'Regular Expression'    => 5,
-                                    ),
-                                ),
-                            ))
-                            ->add('value', CollectionType::class, array(
-                                'mapped'        => false,
-                                'allow_add'     => true,
-                                'required'      => false,
-                                'entry_type'    => TextType::class,
-                            ))
-                            ->add('search', SubmitType::class, array('label' => 'Submit Search'))
-                            ->getForm();
+        $searchForm = $this->createReviewSearchForm();
 
         $searchForm->handleRequest($request);
 
@@ -128,6 +86,62 @@ class AdminController extends Controller
         }
 
         return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
+    }
+
+    protected function createReviewSearchForm()
+    {
+        $review = new Review();
+
+        $searchForm = $this->createFormBuilder($review)
+            ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
+            ->add('type', CollectionType::class, array(
+                'attr' => array('class' => false, 'id' => false),
+                'mapped' => false,
+                'label' => false,
+                'prototype' => false,
+                'allow_add' => true,
+                'required'   => false,
+                'entry_type'   => ChoiceType::class,
+                'entry_options'  => array(
+                    'choices'  => array(
+                        'Title'     => 'title',
+                        'Name'      => 'name',
+                        'Email'     => 'email',
+                        'Content'   => 'content',
+                        'Product'   => 'product',
+                        'Created'   => 'created',
+                    ),
+                ),
+            ))
+            ->add('operator', CollectionType::class, array(
+                'mapped' => false,
+                'label' => false,
+                'prototype' => false,
+                'allow_add' => true,
+                'required'   => false,
+                'entry_type'   => ChoiceType::class,
+                'entry_options'  => array(
+                    'choices'  => array(
+                        'Contains'              => 1,
+                        'Doesn\'nt Contain'     => 2,
+                        'Equal'                 => 3,
+                        'Not Equal'             => 4,
+                        'Regular Expression'    => 5,
+                    ),
+                ),
+            ))
+            ->add('value', CollectionType::class, array(
+                'mapped'        => false,
+                'label'         => false,
+                'prototype' => false,
+                'allow_add'     => true,
+                'required'      => false,
+                'entry_type'    => TextType::class,
+            ))
+            ->add('search', SubmitType::class, array('label' => 'Submit Search'))
+            ->getForm();
+
+        return $searchForm;
     }
 
     /**
