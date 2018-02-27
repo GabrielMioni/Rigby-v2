@@ -173,9 +173,9 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
         return json_encode($recentReview);
     }
 
-    function reviewSearch(array $filters, $generalSearch = null)
+    function reviewSearch(array $filterArray, $generalSearch = null)
     {
-        if (empty($filters) && $generalSearch === null)
+        if (empty($filterArray) && $generalSearch === null)
         {
             $result = $this->createQueryBuilder('review')
                 ->orderBy('review.created')
@@ -194,9 +194,22 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
             ->orWhere('review.reviewContent LIKE :generalSearch')
             ->orWhere('review.reviewProduct LIKE :generalSearch');
 
-        foreach ($filters as $filterKey => $filter)
+        foreach ($filterArray as $filterKey => $filter)
         {
-            $query->andWhere("review.$filterKey =':$filterKey'")->setParameter($filterKey, $filter);
+            switch ($filter['type'])
+            {
+                case '';
+            }
+            switch ($filter['operator'])
+            {
+                case '';
+            }
+            switch ($filter['value'])
+            {
+                case '';
+            }
+
+            dump($filter);
         }
 
         $query->setParameter('generalSearch', $generalSearch);
