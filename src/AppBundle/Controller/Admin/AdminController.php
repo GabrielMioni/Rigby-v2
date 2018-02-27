@@ -70,15 +70,13 @@ class AdminController extends Controller
             $operator = $searchForm->get("operator")->getData();
             $value = $searchForm->get("value")->getData();
 
-            dump($type);
-            dump($operator);
-            dump($value);
+            $filterArray = $this->setFilterArray($type, $operator, $value);
 
-            $filers = array();
+            $this->setFilterArray($type, $operator, $value);
 
             $em = $this->getDoctrine()->getManager();
 
-            $searchResults = $em->getRepository('AppBundle:Review')->reviewSearch($filers, $generalSearch);
+            $searchResults = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch);
             $searchResults = json_decode($searchResults);
 
             dump($searchResults);
@@ -88,9 +86,12 @@ class AdminController extends Controller
         return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
     }
 
-    protected function createReviewSearchForm()
+    protected function createReviewSearchForm($isCreated = false)
     {
         $review = new Review();
+
+        $operatorOption1 = $isCreated === false ? 'Contains' : 'Greater than';
+        $operatorOption2 = $isCreated === false ? 'Doesn\'t contain' : 'Lesser than';
 
         $searchForm = $this->createFormBuilder($review)
             ->add('search_reviews', TextType::class, array('label'=>'Search', 'required'=>false, "mapped" => false))
@@ -104,12 +105,14 @@ class AdminController extends Controller
                 'entry_type'   => ChoiceType::class,
                 'entry_options'  => array(
                     'choices'  => array(
-                        'Title'     => 'title',
-                        'Name'      => 'name',
-                        'Email'     => 'email',
-                        'Content'   => 'content',
-                        'Product'   => 'product',
-                        'Created'   => 'created',
+                        'Type' => array(
+                            'Title'     => 'title',
+                            'Name'      => 'name',
+                            'Email'     => 'email',
+                            'Content'   => 'content',
+                            'Product'   => 'product',
+                            'Created'   => 'created',
+                        )
                     ),
                 ),
             ))
@@ -122,18 +125,20 @@ class AdminController extends Controller
                 'entry_type'   => ChoiceType::class,
                 'entry_options'  => array(
                     'choices'  => array(
-                        'Contains'              => 1,
-                        'Doesn\'nt Contain'     => 2,
-                        'Equal'                 => 3,
-                        'Not Equal'             => 4,
-                        'Regular Expression'    => 5,
+                        'Operator' => array(
+                            $operatorOption1        => 1,
+                            $operatorOption2        => 2,
+                            'Equal'                 => 3,
+                            'Not Equal'             => 4,
+                            'Regular Expression'    => 5,
+                        )
                     ),
                 ),
             ))
             ->add('value', CollectionType::class, array(
                 'mapped'        => false,
                 'label'         => false,
-                'prototype' => false,
+                'prototype'     => false,
                 'allow_add'     => true,
                 'required'      => false,
                 'entry_type'    => TextType::class,
@@ -144,8 +149,28 @@ class AdminController extends Controller
         return $searchForm;
     }
 
+    protected function setFilterArray(array $type, array $operator, array $value)
+    {
+        $max = max([count($type), count($operator), count($value)]);
+
+        $filterArray = array();
+
+        while (count($filterArray) < $max)
+        {
+            $currentIndex = count($filterArray);
+
+            $t = isset($type[$currentIndex])? $type[$currentIndex] : null;
+            $o = isset($operator[$currentIndex]) ? $operator[$currentIndex] : null;
+            $v = isset($value[$currentIndex]) ? $value[$currentIndex] : null;
+
+            $filterArray[] = ['type'=>$t, 'operator'=>$o, 'value'=>$v];
+        }
+
+        return $filterArray;
+    }
+
     /**
-     * @Route("/ajaxAddCriteria", name="addCriteria")
+     * @Route("/ajaxAddFilterInput", name="addCriteria")
      */
     public function ReviewFilterAddCriteriaAction(Request $request)
     {
