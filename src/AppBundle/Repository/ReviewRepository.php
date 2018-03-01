@@ -196,20 +196,61 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
 
         foreach ($filterArray as $filterKey => $filter)
         {
-            switch ($filter['type'])
+            $inputValue = $this->setInputValue($filter, 'value');
+            $inputType  = $this->setInputValue($filter, 'type');
+            $inputOperator = $this->setInputValue($filter, 'operator');
+
+            if ($inputValue === false || $inputType === false ||$inputOperator === false)
             {
-                case '';
-            }
-            switch ($filter['operator'])
-            {
-                case '';
-            }
-            switch ($filter['value'])
-            {
-                case '';
+                break;
             }
 
-            dump($filter);
+            $columns = ['title', 'name', 'email', 'content', 'product', 'created'];
+
+            $type  = in_array($inputType, $columns) ? $inputType : false;
+
+            $queryMask = $type . 'Search';
+
+            if ($type === 'name' || $type ==='email')
+            {
+                $type = 'reviewer' . ucfirst($type);
+            }
+            if ($type === 'content' || $type ==='product')
+            {
+                $type = 'review' . ucfirst($type);
+            }
+
+            $value = $inputValue;
+
+            switch ($inputOperator)
+            {
+                case '1':
+                    $operator = $type === 'created' ? '>' : 'LIKE';
+                    $value = $operator === '>' ? $inputValue : "%$inputValue%";
+                    break;
+                case '2':
+                    $operator = $type === 'created' ? '<' : 'NOT LIKE';
+                    $value = $operator === '<' ? $inputValue : "%$inputValue%";
+                    break;
+                case '3':
+                    $operator = '=';
+                    break;
+                case '4':
+                    $operator = '!=';
+                    break;
+                case '5':
+                    $operator = 'REGEXP';
+                    break;
+                default:
+                    $operator = false;
+                    break;
+
+            }
+
+            $filterQuery = "review.$type $operator :$queryMask";
+
+            $query->andWhere($filterQuery);
+            $query->setParameter($queryMask, $value);
         }
 
         $query->setParameter('generalSearch', $generalSearch);
@@ -217,6 +258,18 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
         $result = $query->getQuery()->getArrayResult();
 
         return json_encode($result, true);
+    }
+
+    protected function setInputValue(array $array, $index)
+    {
+        $outValue = isset($array[$index]) ? trim($array[$index]) : false;
+
+        if ($outValue !== false && $outValue !== '')
+        {
+            return $outValue;
+        }
+
+        return false;
     }
 
     protected function formatSearchWildcard($value)
