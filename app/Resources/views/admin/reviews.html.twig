@@ -83,7 +83,7 @@
                 {{ form_widget(form.operator) }}
                 {{ form_widget(form.value) }}
             {% endif %}
-            <div class="js-add-criteria" data-url="{{ absolute_url('ajaxAddFilterInput') }}"></div>
+            <div class="js-add-criteria" data-url="{{ path('addCriteria') }}"></div>
             <button id="add-criteria" class="btn btn-info">Add Criteria</button>
             {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
         </div>
