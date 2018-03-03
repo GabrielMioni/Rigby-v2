@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
+use AppBundle\Form\Type\ReviewSearchType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -52,36 +53,43 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/reviews", name="reviews")
+     * @Route("/reviews/{page}/{perPage}", name="reviews", requirements={
+     *     "page"="\d+",
+     *     "perPage"="\d+",
+     * })
      */
-    public function ReviewsAction(Request $request)
+    public function ReviewsAction(Request $request, $page = 1, $perPage = 10)
     {
         $searchForm = $this->createReviewSearchForm();
-
         $searchForm->handleRequest($request);
+
+        $em = $this->getDoctrine()->getManager();
+
+        $generalSearch = null;
+        $filterArray   = array();
 
         if ($searchForm->isSubmitted())
         {
-            $data = $searchForm->getData();
-
-            $generalSearch = $searchForm->get("search_reviews")->getData();
-
-            $type = $searchForm->get("type")->getData();
-            $operator = $searchForm->get("operator")->getData();
-            $value = $searchForm->get("value")->getData();
+            $generalSearch  = $searchForm->get("search_reviews")->getData();
+            $type           = $searchForm->get("type")->getData();
+            $operator       = $searchForm->get("operator")->getData();
+            $value          = $searchForm->get("value")->getData();
 
             $filterArray = $this->setFilterArray($type, $operator, $value);
-
-            $this->setFilterArray($type, $operator, $value);
-
-            $em = $this->getDoctrine()->getManager();
-
-            $searchResults = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch);
-            $searchResults = json_decode($searchResults);
-
-            dump($searchResults);
-
         }
+
+        $reviewPagination = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch, $page, $perPage);
+        dump($reviewPagination);
+
+        $totalReviewsReturned = $reviewPagination->getIterator()->count();
+        $reviews = $reviewPagination->getIterator();
+        dump($reviews);
+
+        $count = count($reviewPagination);
+
+        $maxPages = ceil($reviewPagination->count() / $perPage);
+        $thisPage = $page;
+
 
         return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
     }
