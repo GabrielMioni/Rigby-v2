@@ -4,6 +4,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\Review;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 
 /**
@@ -173,26 +174,22 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
         return json_encode($recentReview);
     }
 
-    function reviewSearch(array $filterArray, $generalSearch = null)
+    function reviewSearch(array $filterArray, $generalSearch = null, $currentPage = 1, $perPage = 10)
     {
-        if (empty($filterArray) && $generalSearch === null)
+        $queryBuilder = $this->createQueryBuilder('review')
+            ->orderBy('review.created');
+
+        if ($generalSearch !== null)
         {
-            $result = $this->createQueryBuilder('review')
-                ->orderBy('review.created')
-                ->getQuery()
-                ->getArrayResult();
+            $generalSearch = trim($generalSearch) === '' ? '%' : $this->formatSearchWildcard($generalSearch);
 
-            return json_encode($result, true);
+            $queryBuilder->andWhere('review.title LIKE :generalSearch')
+                ->orWhere('review.reviewerName LIKE :generalSearch')
+                ->orWhere('review.reviewerEmail LIKE :generalSearch')
+                ->orWhere('review.reviewContent LIKE :generalSearch')
+                ->orWhere('review.reviewProduct LIKE :generalSearch')
+                ->setParameter('generalSearch', $generalSearch);
         }
-
-        $generalSearch = $generalSearch === null || trim($generalSearch) === '' ? '%' : $this->formatSearchWildcard($generalSearch);
-
-        $query = $this->createQueryBuilder('review')
-            ->andWhere('review.title LIKE :generalSearch')
-            ->orWhere('review.reviewerName LIKE :generalSearch')
-            ->orWhere('review.reviewerEmail LIKE :generalSearch')
-            ->orWhere('review.reviewContent LIKE :generalSearch')
-            ->orWhere('review.reviewProduct LIKE :generalSearch');
 
         foreach ($filterArray as $filterKey => $filter)
         {
@@ -200,14 +197,14 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
             $inputType  = $this->setInputValue($filter, 'type');
             $inputOperator = $this->setInputValue($filter, 'operator');
 
-            if ($inputValue === false || $inputType === false ||$inputOperator === false)
-            {
-                break;
-            }
-
             $columns = ['title', 'name', 'email', 'content', 'product', 'created'];
 
             $type  = in_array($inputType, $columns) ? $inputType : false;
+
+            if ($inputValue === false || $inputType === false ||$inputOperator === false || $type === false)
+            {
+                break;
+            }
 
             $queryMask = $type . 'Search';
 
@@ -244,20 +241,27 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
                 default:
                     $operator = false;
                     break;
-
             }
 
             $filterQuery = "review.$type $operator :$queryMask";
 
-            $query->andWhere($filterQuery);
-            $query->setParameter($queryMask, $value);
+            $queryBuilder->andWhere($filterQuery);
+            $queryBuilder->setParameter($queryMask, $value);
         }
 
-        $query->setParameter('generalSearch', $generalSearch);
+        $query = $queryBuilder->getQuery();
 
-        $result = $query->getQuery()->getArrayResult();
+        return $this->Paginate($query, $currentPage, $perPage);
+    }
 
-        return json_encode($result, true);
+    protected function Paginate($query, $currentPage, $perPage)
+    {
+        $paginator = new Paginator($query);
+        $paginator->getQuery()
+            ->setFirstResult($perPage * ($currentPage - 1))
+            ->setMaxResults($perPage);
+
+        return $paginator;
     }
 
     protected function setInputValue(array $array, $index)
