@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
 use AppBundle\Form\Type\ReviewSearchType;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -79,20 +80,62 @@ class AdminController extends Controller
         }
 
         $reviewPagination = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch, $page, $perPage);
-        dump($reviewPagination);
+//        dump($reviewPagination);
 
         $totalReviewsReturned = $reviewPagination->getIterator()->count();
         $reviews = $reviewPagination->getIterator();
-        dump($reviews);
+//        dump($reviews);
 
-        $count = count($reviewPagination);
+        $totalReviews = count($reviewPagination);
 
-        $maxPages = ceil($reviewPagination->count() / $perPage);
-        $thisPage = $page;
+        $url = $this->generateUrl('reviews');
 
+        $pagination = $this->buildPaginationNavData($totalReviews, $page, $perPage, $url);
 
-        return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView()));
+//        dump($pagination);
+
+//        return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView(), 'pagination'=>$pagination));
+        return $this->render('admin/reviews.html.twig', array(
+            'form'=>$searchForm->createView(),
+            'reviews'=>$reviews,
+            'pagination'=>$pagination
+        ));
     }
+
+    protected function buildPaginationNavData($totalReviews, $page, $perPage, $url)
+    {
+        $maxPages = ceil($totalReviews / $perPage);
+
+        if ($maxPages <= 1)
+        {
+            return array();
+        }
+
+        $paginationArray = array();
+
+        $url1 = $url . '/1/' . $perPage;
+        $url2 = $page > 1 ? $url . '/' . ($page -1) . "/$perPage" : $url . '/1/' . $perPage;
+
+        $pointer = $page > 4 ? $page - 4 : 1;
+
+        $paginationArray[] = array('url'=>$url1, 'page'=>'<<');
+        $paginationArray[] = array('url'=>$url2, 'page'=>'<');
+
+        while (count($paginationArray) < 12 && $pointer <= $maxPages)
+        {
+            $paginationArray[] = array('url'=>"$url/$pointer/$perPage", 'page'=>$pointer);
+            ++$pointer;
+        }
+
+        $url3 = $page < $maxPages ? $url . '/' . ($page +1) . "/$perPage" : "$url/$maxPages/$perPage";
+        $url4 = "$url/$maxPages/$perPage";
+
+        $paginationArray[] = array('url'=>$url3, 'page'=>'>');
+        $paginationArray[] = array('url'=>$url4, 'page'=>'>>');
+
+        return $paginationArray;
+    }
+
 
     protected function createReviewSearchForm($isCreated = false)
     {

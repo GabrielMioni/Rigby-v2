@@ -40,6 +40,10 @@
             height: 30px;
         }
 
+        #navbar ul li a {
+            color: #464752;
+        }
+
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script rel="script" src="{{ asset('js/rigby-review.js') }}" ></script>
@@ -88,4 +92,6 @@
             {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
         </div>
     {{ form_end(form) }}
+    {# {{ dump(pagination) }} #}
+    {% include 'admin/pagination-bar.html.twig' with {'pagination': pagination} %}
 {% endblock %}

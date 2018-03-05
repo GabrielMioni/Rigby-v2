@@ -1,0 +1,9 @@
+
+{{ dump(pagination) }}
+<nav id="navbar">
+    <ul class="pagination">
+        {% for button in pagination %}
+            <li class="page-item"><a class="page-link" href="{{ button['url'] }}"> {{ button['page'] }} </a></li>
+        {% endfor %}
+    </ul>
+</nav>
