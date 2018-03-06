@@ -3,9 +3,6 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
-use AppBundle\Form\Type\ReviewSearchType;
-use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -13,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class AdminController extends Controller
@@ -64,10 +62,7 @@ class AdminController extends Controller
         $searchForm = $this->createReviewSearchForm();
         $searchForm->handleRequest($request);
 
-        $em = $this->getDoctrine()->getManager();
-
-        $generalSearch = null;
-        $filterArray   = array();
+        $session = new Session();
 
         if ($searchForm->isSubmitted())
         {
@@ -76,15 +71,32 @@ class AdminController extends Controller
             $operator       = $searchForm->get("operator")->getData();
             $value          = $searchForm->get("value")->getData();
 
-            $filterArray = $this->setFilterArray($type, $operator, $value);
+            $session->set('generalSearch', $generalSearch);
+            $session->set('type', $type);
+            $session->set('operator', $operator);
+            $session->set('value', $value);
+
+            return $this->redirectToRoute('reviews');
         }
 
-        $reviewPagination = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch, $page, $perPage);
-//        dump($reviewPagination);
+        $generalSearch  = $this->setFromSessionBag($session, 'generalSearch');
+        $type           = $this->setFromSessionBag($session, 'type');
+        $operator       = $this->setFromSessionBag($session, 'operator');
+        $value          = $this->setFromSessionBag($session, 'value');
 
-        $totalReviewsReturned = $reviewPagination->getIterator()->count();
+        $searchForm->get('search_reviews')->setData($generalSearch);
+        $searchForm->get('type')->setData($type);
+        $searchForm->get('operator')->setData($operator);
+        $searchForm->get('value')->setData($value);
+
+        $em = $this->getDoctrine()->getManager();
+
+        $filterArray = ($type !== null && $operator !== null && $value !== null) ? $this->setFilterArray($type, $operator, $value) : array();
+
+        $reviewPagination = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch, $page, $perPage);
         $reviews = $reviewPagination->getIterator();
-//        dump($reviews);
+
+        dump($reviews);
 
         $totalReviews = count($reviewPagination);
 
@@ -92,9 +104,7 @@ class AdminController extends Controller
 
         $pagination = $this->buildPaginationNavData($totalReviews, $page, $perPage, $url);
 
-//        dump($pagination);
 
-//        return $this->render('admin/reviews.html.twig', array('form'=>$searchForm->createView(), 'pagination'=>$pagination));
         return $this->render('admin/reviews.html.twig', array(
             'form'=>$searchForm->createView(),
             'reviews'=>$reviews,
@@ -102,9 +112,15 @@ class AdminController extends Controller
         ));
     }
 
+    protected function setFromSessionBag(Session $session, $index)
+    {
+        return $session->has($index) === true ? $session->get($index) : null;
+    }
+
     protected function buildPaginationNavData($totalReviews, $page, $perPage, $url)
     {
         $maxPages = ceil($totalReviews / $perPage);
+        $page = intval($page);
 
         if ($maxPages <= 1)
         {
@@ -115,23 +131,28 @@ class AdminController extends Controller
 
         $url1 = $url . '/1/' . $perPage;
         $url2 = $page > 1 ? $url . '/' . ($page -1) . "/$perPage" : $url . '/1/' . $perPage;
+        $navLeftStatus = $page === 1 ? 'disabled' : false;
 
-        $pointer = $page > 4 ? $page - 4 : 1;
+        $pointer = $page > 5 ? $page - 5 : 1;
 
-        $paginationArray[] = array('url'=>$url1, 'page'=>'<<');
-        $paginationArray[] = array('url'=>$url2, 'page'=>'<');
+        $paginationArray[] = array('url'=>$url1, 'page'=>'<<', 'status'=>$navLeftStatus);
+        $paginationArray[] = array('url'=>$url2, 'page'=>'<', 'status'=>$navLeftStatus);
 
-        while (count($paginationArray) < 12 && $pointer <= $maxPages)
+//        while (count($paginationArray) < 11 && $pointer <= $maxPages)
+        while (count($paginationArray) < 13 && $pointer <= $maxPages)
         {
-            $paginationArray[] = array('url'=>"$url/$pointer/$perPage", 'page'=>$pointer);
+            $buttonStatus = $pointer === $page ? 'active' : false;
+            $paginationArray[] = array('url'=>"$url/$pointer/$perPage", 'page'=>$pointer, 'status'=>$buttonStatus);
             ++$pointer;
         }
+
+        $navRightStatus = $page === intval($maxPages) ? 'disabled' : false;
 
         $url3 = $page < $maxPages ? $url . '/' . ($page +1) . "/$perPage" : "$url/$maxPages/$perPage";
         $url4 = "$url/$maxPages/$perPage";
 
-        $paginationArray[] = array('url'=>$url3, 'page'=>'>');
-        $paginationArray[] = array('url'=>$url4, 'page'=>'>>');
+        $paginationArray[] = array('url'=>$url3, 'page'=>'>', 'status'=>$navRightStatus);
+        $paginationArray[] = array('url'=>$url4, 'page'=>'>>', 'status'=>$navRightStatus);
 
         return $paginationArray;
     }
