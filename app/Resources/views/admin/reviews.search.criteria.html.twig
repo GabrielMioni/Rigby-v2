@@ -1,28 +1,35 @@
-<div class="filter row">
-    <div class="col-md-4">
-        <select class='type' name="form[type][__name__]">
-            <optgroup label="criteria">
-                <option value="title">Title</option>
-                <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="content">Content</option>
-                <option value="product">Product</option>
-                <option value="created">Created</option>
-            </optgroup>
-        </select>
-    </div>
-    <div class="col-md-4">
-        <select name="form[operator][__name__]">
-            <optgroup label="criteria">
-                <option value="1">Contains</option>
-                <option value="2">Doesn't Contain</option>
-                <option value="3">Equal</option>
-                <option value="4">Not Equal</option>
-                <option value="5">Regular Expression</option>
-            </optgroup>
-        </select>
-    </div>
-    <div class="col-md-4">
-        <input type="text" name="form[value][__name__]" />
+<div class="row">
+    <div class="filter">
+        <div class="col-md-1">
+            <button class="form-control trash">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        <div class="col-md-3">
+            <select id="form_type___name__" class='form-control' name="form[type][__name__]">
+                <optgroup label="criteria">
+                    <option value="title">Title</option>
+                    <option value="name">Name</option>
+                    <option value="email">Email</option>
+                    <option value="content">Content</option>
+                    <option value="product">Product</option>
+                    <option value="created">Created</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select id="form_operator___name__" class='form-control' name="form[operator][__name__]">
+                <optgroup label="criteria">
+                    <option value="1">Contains</option>
+                    <option value="2">Doesn't Contain</option>
+                    <option value="3">Equal</option>
+                    <option value="4">Not Equal</option>
+                    <option value="5">Regular Expression</option>
+                </optgroup>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input id="form_value___name__" class="form-control" name="form[value][__name__]" type="text" />
+        </div>
     </div>
 </div>
