@@ -10,13 +10,12 @@
     <link rel="stylesheet" href="{{ asset('css/rigby-admin.css') }}" >
 
     <style>
+
         #review-search .row {
-            max-height: 80px;
+            max-height: 150px;
+            padding: 10px 0 0 0;
         }
-        #review-search button {
-            position: relative;
-            left: 15px;
-        }
+
         #add-criteria {
             display: none;
         }
@@ -36,6 +35,9 @@
         #searchFields #generalSearchRow {
             max-height: 80px;
         }
+        .trash {
+            min-width: 100%;
+        }
         .filter.row {
             height: 30px;
         }
@@ -44,9 +46,27 @@
             color: #464752;
         }
 
+        #controls button {
+            margin-left: 15px;
+        }
+
+        .page-item.disabled {
+            opacity: .6;
+        }
+        .page-item.disabled span:hover {
+            cursor: default;
+        }
+        @media only screen and (min-width: 1000px) {
+            #review-search .row {
+                max-height: 50px;
+                padding: 10px 0 0 0;
+            }
+        }
+
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script rel="script" src="{{ asset('js/rigby-review.js') }}" ></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -68,30 +88,39 @@
         </div>
         <div id="filterFields">
             {% for t in form.type %}
-                <div class="filter row">
-                    <div class="col-md-4">
-                        {{ form_widget(t) }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ form_widget( form.operator[ loop.index0 ]) }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ form_widget( form.value[ loop.index0 ]) }}
+                <div class="row">
+                    <div class="filter">
+                        <div class="col-md-1">
+                            <button class="form-control trash">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_widget(t) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_widget( form.operator[ loop.index0 ]) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_widget( form.value[ loop.index0 ]) }}
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div class="row">
-            {% if form.type|length <= 0 %}
-                {{ form_widget(form.type) }}
-                {{ form_widget(form.operator) }}
-                {{ form_widget(form.value) }}
-            {% endif %}
-            <div class="js-add-criteria" data-url="{{ path('addCriteria') }}"></div>
-            <button id="add-criteria" class="btn btn-info">Add Criteria</button>
-            {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
+        <div id="controls">
+            <div class="row">
+                {% if form.type|length <= 0 %}
+                    {{ form_widget(form.type) }}
+                    {{ form_widget(form.operator) }}
+                    {{ form_widget(form.value) }}
+                {% endif %}
+                <div class="js-add-criteria" data-url="{{ path('addCriteria') }}"></div>
+                {{ form_widget(form.search, {'attr': {'class': 'btn-primary'}}) }}
+                <button id="add-criteria" class="btn btn-info">Add Criteria</button>
+            </div>
         </div>
     {{ form_end(form) }}
-    {# {{ dump(pagination) }} #}
+    {{ dump(reviews) }}
     {% include 'admin/pagination-bar.html.twig' with {'pagination': pagination} %}
 {% endblock %}

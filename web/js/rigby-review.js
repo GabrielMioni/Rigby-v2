@@ -82,6 +82,15 @@ function ajaxAddFilterInput(addCriteriaUrl) {
     });
 }
 
+function deleteFilterRow() {
+    $(document).on('click', '.trash', function (e) {
+        e.preventDefault();
+
+        var parentRow = $(this).closest('.row');
+        parentRow.remove();
+    });
+}
+
 $( document ).ready(function() {
 
     var addCriteriaUrl = $('.js-add-criteria').data('url');
@@ -97,4 +106,6 @@ $( document ).ready(function() {
     });
 
     onTypeSelectChange();
+
+    deleteFilterRow();
 });
