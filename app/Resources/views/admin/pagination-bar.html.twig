@@ -3,9 +3,9 @@
         {% for button in pagination %}
             {% if button['status'] != false %}
                 {% set status = ' ' ~ button['status'] %}
-                <li class="page-item{{ status }}"><span class="page-link"> {{ button['page'] }} </span></li>
+                <li class="page-item{{ status }}"><span class="page-link"> {{ button['page'] | raw }} </span></li>
             {% else %}
-                <li class="page-item"><a class="page-link" href="{{ button['url'] }}"> {{ button['page'] }} </a></li>
+                <li class="page-item"><a class="page-link" href="{{ button['url'] }}"> {{ button['page'] | raw }} </a></li>
             {% endif %}
         {% endfor %}
     </ul>

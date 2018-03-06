@@ -135,8 +135,8 @@ class AdminController extends Controller
 
         $pointer = $page > 5 ? $page - 5 : 1;
 
-        $paginationArray[] = array('url'=>$url1, 'page'=>'<<', 'status'=>$navLeftStatus);
-        $paginationArray[] = array('url'=>$url2, 'page'=>'<', 'status'=>$navLeftStatus);
+        $paginationArray[] = array('url'=>$url1, 'page'=>'<i class="fas fa-angle-double-left"></i>', 'status'=>$navLeftStatus);
+        $paginationArray[] = array('url'=>$url2, 'page'=>'<i class="fas fa-angle-left"></i>', 'status'=>$navLeftStatus);
 
 //        while (count($paginationArray) < 11 && $pointer <= $maxPages)
         while (count($paginationArray) < 13 && $pointer <= $maxPages)
@@ -151,8 +151,8 @@ class AdminController extends Controller
         $url3 = $page < $maxPages ? $url . '/' . ($page +1) . "/$perPage" : "$url/$maxPages/$perPage";
         $url4 = "$url/$maxPages/$perPage";
 
-        $paginationArray[] = array('url'=>$url3, 'page'=>'>', 'status'=>$navRightStatus);
-        $paginationArray[] = array('url'=>$url4, 'page'=>'>>', 'status'=>$navRightStatus);
+        $paginationArray[] = array('url'=>$url3, 'page'=>'<i class="fas fa-angle-right"></i>', 'status'=>$navRightStatus);
+        $paginationArray[] = array('url'=>$url4, 'page'=>'<i class="fas fa-angle-double-right"></i>', 'status'=>$navRightStatus);
 
         return $paginationArray;
     }
