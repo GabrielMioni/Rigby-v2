@@ -54,14 +54,6 @@
     width: 90%;
 }
 
-.rigby-star {
-    background-image: url('../images/star-full24.png');
-    height: 15px;
-    width: 15px;
-    display: inline-block;
-    background-size: cover;
-}
-
 .bar-wrapper {
     height: 80%;
     position: relative;
