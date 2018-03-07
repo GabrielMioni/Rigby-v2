@@ -56,6 +56,14 @@
         .page-item.disabled span:hover {
             cursor: default;
         }
+
+        #reviewHeader {
+            font-size: 18px;
+            background-color: #add8e6;
+            max-height: 50px;
+            padding: 10px;
+        }
+
         @media only screen and (min-width: 1000px) {
             #review-search .row {
                 max-height: 50px;
@@ -121,6 +129,6 @@
             </div>
         </div>
     {{ form_end(form) }}
-    {{ dump(reviews) }}
+    {% include 'admin/review-update-rows.html.twig' with{'updateForms': updateForms} %}
     {% include 'admin/pagination-bar.html.twig' with {'pagination': pagination} %}
 {% endblock %}

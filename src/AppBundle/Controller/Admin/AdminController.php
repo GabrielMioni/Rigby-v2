@@ -4,6 +4,8 @@ namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -96,7 +98,7 @@ class AdminController extends Controller
         $reviewPagination = $em->getRepository('AppBundle:Review')->reviewSearch($filterArray, $generalSearch, $page, $perPage);
         $reviews = $reviewPagination->getIterator();
 
-        dump($reviews);
+        $updateForms = $this->createReviewUpdateForms($reviews);
 
         $totalReviews = count($reviewPagination);
 
@@ -104,11 +106,11 @@ class AdminController extends Controller
 
         $pagination = $this->buildPaginationNavData($totalReviews, $page, $perPage, $url);
 
-
         return $this->render('admin/reviews.html.twig', array(
             'form'=>$searchForm->createView(),
             'reviews'=>$reviews,
-            'pagination'=>$pagination
+            'pagination'=>$pagination,
+            'updateForms'=>$updateForms
         ));
     }
 
@@ -156,7 +158,6 @@ class AdminController extends Controller
 
         return $paginationArray;
     }
-
 
     protected function createReviewSearchForm($isCreated = false)
     {
@@ -239,6 +240,56 @@ class AdminController extends Controller
         }
 
         return $filterArray;
+    }
+
+    protected function createReviewUpdateForms(\ArrayIterator $reviews)
+    {
+        $reviewUpdateFormViews = array();
+
+        foreach ($reviews as $r)
+        {
+            $id      = $r->getId();
+            $title   = $r->getTitle();
+            $content = $r->getReviewContent();
+            $rating  = $r->getRating();
+            $name    = $r->getReviewerName();
+            $email   = $r->getReviewerEmail();
+
+            $review = new Review();
+            $review->setTitle($title);
+            $review->setReviewContent($content);
+            $review->setRating($rating);
+            $review->setReviewerName($name);
+            $review->setReviewerEmail($email);
+
+            $formBuilder = $this->createFormBuilder($review)
+                ->add('id', HiddenType::class, array(
+                    'mapped' => false,
+                    'label' => false,
+                ))
+                ->add('title', TextType::class)
+                ->add('reviewerName', TextType::class)
+                ->add('reviewerEmail', EmailType::class)
+                ->add('reviewContent', TextType::class)
+                ->add('rating', ChoiceType::class, array(
+                    'choices'  => array(
+                        '5' => 5,
+                        '4' => 4,
+                        '3' => 3,
+                        '2' => 2,
+                        '1' => 1,
+                    ),
+                ))
+                ->add('save', SubmitType::class, array('label' => 'Update'));
+
+            $formBuilder->get('id')->setData($id);
+
+            $formView = $formBuilder->getForm()->createView();
+
+            $reviewUpdateFormViews[] = $formView;
+        }
+
+        return $reviewUpdateFormViews;
     }
 
     /**

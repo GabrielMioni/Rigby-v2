@@ -1,0 +1,55 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Rating</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Title</th>
+        <th scope="col">Ip</th>
+        <th scope="col">Date</th>
+        <th scope="col">Hidden</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for form in updateForms %}
+        {% set title = form.vars.value.title %}
+        {% set content = form.vars.value.reviewContent %}
+        {% set rating = form.vars.value.rating %}
+        {% set name = form.vars.value.reviewerName %}
+        {% set id = form.vars.value.id %}
+        {% set email = form.vars.value.reviewerEmail %}
+        <tr>
+            <th scope="row">{{ id }}</th>
+            <td>{{ rating }}</td>
+            <td>{{ name }}</td>
+            <td>{{ email }}</td>
+            <td>{{ title }}</td>
+            <td>111.11.11.111</td>
+            <td>Feb 2, 2017</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<!--
+<div id="reviewHeader">
+    <div class="row">
+        <div class="col-sm-1">Rating</div>
+        <div class="col-sm-2">Name</div>
+        <div class="col-sm-2">Email</div>
+        <div class="col-sm-2">Title</div>
+        <div class="col-sm-2">IP</div>
+        <div class="col-sm-1">Date</div>
+        <div class="col-sm-1">Hidden</div>
+    </div>
+</div>
+-->
+
