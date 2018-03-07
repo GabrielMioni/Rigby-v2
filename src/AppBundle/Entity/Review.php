@@ -114,6 +114,18 @@ class Review
      */
     private $purchaseConfirmed;
 
+    /**
+     * Set id
+     *
+     * @param integer $id
+     *
+     * @return Review
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     /**
      * Get id
