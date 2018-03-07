@@ -6,13 +6,16 @@ use AppBundle\Entity\Review;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 class AdminController extends Controller
@@ -254,8 +257,10 @@ class AdminController extends Controller
             $rating  = $r->getRating();
             $name    = $r->getReviewerName();
             $email   = $r->getReviewerEmail();
+            $created = $r->getCreated();
 
             $review = new Review();
+            $review->setCreated($created);
             $review->setTitle($title);
             $review->setReviewContent($content);
             $review->setRating($rating);
@@ -266,11 +271,16 @@ class AdminController extends Controller
                 ->add('id', HiddenType::class, array(
                     'mapped' => false,
                     'label' => false,
+                    'data' => $id,
+                ))
+                ->add('created', HiddenType::class, array(
+                    'mapped' => false,
+                    'label' => false,
                 ))
                 ->add('title', TextType::class)
                 ->add('reviewerName', TextType::class)
                 ->add('reviewerEmail', EmailType::class)
-                ->add('reviewContent', TextType::class)
+                ->add('reviewContent', TextareaType::class)
                 ->add('rating', ChoiceType::class, array(
                     'choices'  => array(
                         '5' => 5,
@@ -282,14 +292,42 @@ class AdminController extends Controller
                 ))
                 ->add('save', SubmitType::class, array('label' => 'Update'));
 
-            $formBuilder->get('id')->setData($id);
-
             $formView = $formBuilder->getForm()->createView();
 
             $reviewUpdateFormViews[] = $formView;
         }
 
         return $reviewUpdateFormViews;
+    }
+
+    function createUpdateForm() {
+        $review = new Review();
+
+        $formBuilder = $this->createFormBuilder($review)
+            ->add('id', HiddenType::class, array(
+                'mapped' => false,
+                'label' => false,
+            ))
+            ->add('created', HiddenType::class, array(
+                'mapped' => false,
+                'label' => false,
+            ))
+            ->add('title', TextType::class)
+            ->add('reviewerName', TextType::class)
+            ->add('reviewerEmail', EmailType::class)
+            ->add('reviewContent', TextareaType::class)
+            ->add('rating', ChoiceType::class, array(
+                'choices'  => array(
+                    '5' => 5,
+                    '4' => 4,
+                    '3' => 3,
+                    '2' => 2,
+                    '1' => 1,
+                ),
+            ))
+            ->add('save', SubmitType::class, array('label' => 'Update'));
+
+        return $formBuilder;
     }
 
     /**
@@ -311,5 +349,68 @@ class AdminController extends Controller
         $operator = $postData['operator'];
 
         return $this->render('admin/reviews.search.criteria.html.twig', array($number, $criteria, $operator));
+    }
+
+    /**
+     * @Route("/ajaxReviewUpdate", name="updateReview")
+     */
+    public function ReviewUpdateAjaxAction(Request $request)
+    {
+
+        $isAjax = $request->isXmlHttpRequest();
+
+        if ($isAjax === false)
+        {
+            die();
+        }
+
+        $review = new Review();
+
+        $formBuilder = $this->createFormBuilder($review)
+            ->add('id', HiddenType::class, array(
+                'mapped' => false,
+                'label' => false,
+            ))
+            ->add('created', HiddenType::class, array(
+                'mapped' => false,
+                'label' => false,
+            ))
+            ->add('title', TextType::class)
+            ->add('reviewerName', TextType::class)
+            ->add('reviewerEmail', EmailType::class)
+            ->add('reviewContent', TextareaType::class)
+            ->add('rating', ChoiceType::class, array(
+                'choices'  => array(
+                    '5' => 5,
+                    '4' => 4,
+                    '3' => 3,
+                    '2' => 2,
+                    '1' => 1,
+                ),
+            ))
+            ->add('save', SubmitType::class, array('label' => 'Update'));
+
+        $form = $formBuilder->getForm();
+        $form->handleRequest($request);
+
+         if ($form->isSubmitted() && $form->isValid()) {
+
+            $em = $this->getDoctrine()->getManager();
+
+            $id = $form["id"]->getData();
+
+            $status = json_encode($id);
+
+            /*
+            $em->persist($review);
+            $em->flush();
+            $status = "saved";
+            */
+
+        } else{
+             $status = "invalid";
+        }
+
+        return new JsonResponse(array('status' => $status));
     }
 }
