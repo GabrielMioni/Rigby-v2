@@ -91,6 +91,57 @@ function deleteFilterRow() {
     });
 }
 
+function editClick() {
+    $(document).on('click', '.edit', function () {
+
+        var editToggle = $(this);
+
+        var editRow = editToggle.parent().next('.update-row');
+
+        if (editRow.is(':visible'))
+        {
+            editRow.hide();
+            editToggle.empty();
+            editToggle.append('<i class="fas fa-edit"></i>');
+        } else {
+            editRow.show();
+            editToggle.empty();
+            editToggle.append('<i class="fas fa-minus-square"></i>');
+        }
+    })
+}
+
+function updateClick() {
+    $(document).on('click', 'button', function (e) {
+
+        var name = $(this).attr('name');
+
+        if (name === 'form[save]')
+        {
+            e.preventDefault();
+
+            var parentForm = $(this).closest('form');
+
+            var data = parentForm.serialize();
+            var updateUrl = parentForm.find('.js-update-review').data('url');
+            console.log(updateUrl);
+
+            $.ajax({
+                url: updateUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function(resp) {
+                    console.log(resp);
+                },
+                error: function(resp) {
+                    console.log(resp);
+                }
+            });
+        }
+    })
+}
+
 $( document ).ready(function() {
 
     var addCriteriaUrl = $('.js-add-criteria').data('url');
@@ -108,4 +159,8 @@ $( document ).ready(function() {
     onTypeSelectChange();
 
     deleteFilterRow();
+
+    editClick();
+
+    updateClick();
 });
