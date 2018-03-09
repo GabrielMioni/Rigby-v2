@@ -114,32 +114,48 @@ function editClick() {
 function updateClick() {
     $(document).on('click', 'button', function (e) {
 
-        var name = $(this).attr('name');
-
-        if (name === 'form[save]')
+        if ($(this).attr('name') !== 'form[save]')
         {
-            e.preventDefault();
-
-            var parentForm = $(this).closest('form');
-
-            var data = parentForm.serialize();
-            var updateUrl = parentForm.find('.js-update-review').data('url');
-            console.log(updateUrl);
-
-            $.ajax({
-                url: updateUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function(resp) {
-                    console.log(resp);
-                },
-                error: function(resp) {
-                    console.log(resp);
-                }
-            });
+            return
         }
+
+        e.preventDefault();
+
+        var parentForm = $(this).closest('form');
+
+//        var id = parentForm.find( $("input[name*='form[id]']") ).val();
+
+        var data = parentForm.serialize();
+        var updateUrl = parentForm.find('.js-update-review').data('url');
+
+        $.ajax({
+            url: updateUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            success: function(data) {
+                console.log(data);
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
     })
+}
+
+function getReviewById(id) {
+    $.ajax({
+        url: '/ajaxGetReviewById',
+        type: 'POST',
+        dataType: 'json',
+        data: {id: id},
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(data) {
+            console.log(data);
+        }
+    });
 }
 
 $( document ).ready(function() {
