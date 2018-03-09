@@ -280,4 +280,49 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
     {
         return '%' . trim( str_replace(' ', '%', $value) ) . '%';
     }
+
+    function updateReview(array $reviewDataArray)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->update()
+            ->set('r.rating', ':rating')
+            ->set('r.title', ':title')
+            ->set('r.reviewerName', ':name')
+            ->set('r.reviewerEmail', ':email')
+            ->set('r.reviewContent', ':content')
+            ->where('r.id = :id');
+
+        foreach ($reviewDataArray as $key=> $value) {
+            $qb->setParameter($key, $value);
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->execute();
+    }
+
+    function getReviewById($id)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.rating, r.title, r.reviewerName, r.reviewerEmail, r.reviewContent')
+            ->where('r.id = :id')
+            ->setParameter('id', $id);
+        $query = $qb->getQuery();
+
+        $arrayResult = $query->getArrayResult();
+
+        if (count($arrayResult) > 0)
+        {
+            $out = array();
+
+            foreach ($arrayResult[0] as $key=>$value)
+            {
+                $out[$key] = $value;
+            }
+
+            return $out;
+        }
+
+        return array();
+    }
 }
