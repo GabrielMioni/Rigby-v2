@@ -289,9 +289,9 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
             ->update()
             ->set('r.rating', ':rating')
             ->set('r.title', ':title')
-            ->set('r.reviewerName', ':name')
-            ->set('r.reviewerEmail', ':email')
-            ->set('r.reviewContent', ':content')
+            ->set('r.name', ':name')
+            ->set('r.email', ':email')
+            ->set('r.content', ':content')
             ->where('r.id = :id');
 
         foreach ($reviewDataArray as $key=> $value) {
@@ -306,7 +306,7 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
     function getReviewById($id)
     {
         $qb = $this->createQueryBuilder('r')
-            ->select('r.rating, r.title, r.reviewerName, r.reviewerEmail, r.reviewContent')
+            ->select('r.rating, r.title, r.name, r.email, r.content')
             ->where('r.id = :id')
             ->setParameter('id', $id);
         $query = $qb->getQuery();
