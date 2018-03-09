@@ -255,19 +255,19 @@ class AdminController extends Controller
         {
             $id      = $r->getId();
             $title   = $r->getTitle();
-            $content = $r->getReviewContent();
+            $content = $r->getContent();
             $rating  = $r->getRating();
-            $name    = $r->getReviewerName();
-            $email   = $r->getReviewerEmail();
+            $name    = $r->getName();
+            $email   = $r->getEmail();
             $created = $r->getCreated();
 
             $review = new Review();
             $review->setCreated($created);
             $review->setTitle($title);
-            $review->setReviewContent($content);
+            $review->setContent($content);
             $review->setRating($rating);
-            $review->setReviewerName($name);
-            $review->setReviewerEmail($email);
+            $review->setName($name);
+            $review->setEmail($email);
 
             $formBuilder = $this->createFormBuilder($review)
                 ->add('id', HiddenType::class, array(
@@ -280,9 +280,9 @@ class AdminController extends Controller
                     'label' => false,
                 ))
                 ->add('title', TextType::class)
-                ->add('reviewerName', TextType::class)
-                ->add('reviewerEmail', EmailType::class)
-                ->add('reviewContent', TextareaType::class)
+                ->add('name', TextType::class)
+                ->add('email', EmailType::class)
+                ->add('content', TextareaType::class)
                 ->add('rating', ChoiceType::class, array(
                     'choices'  => array(
                         '5' => 5,
@@ -315,9 +315,9 @@ class AdminController extends Controller
                 'label' => false,
             ))
             ->add('title', TextType::class)
-            ->add('reviewerName', TextType::class)
-            ->add('reviewerEmail', EmailType::class)
-            ->add('reviewContent', TextareaType::class)
+            ->add('name', TextType::class)
+            ->add('email', EmailType::class)
+            ->add('content', TextareaType::class)
             ->add('rating', ChoiceType::class, array(
                 'choices'  => array(
                     '5' => 5,
@@ -377,9 +377,9 @@ class AdminController extends Controller
                 'label' => false,
             ))
             ->add('title', TextType::class)
-            ->add('reviewerName', TextType::class)
-            ->add('reviewerEmail', EmailType::class)
-            ->add('reviewContent', TextareaType::class)
+            ->add('name', TextType::class)
+            ->add('email', EmailType::class)
+            ->add('content', TextareaType::class)
             ->add('rating', ChoiceType::class, array(
                 'choices'  => array(
                     '5' => 5,
@@ -398,9 +398,9 @@ class AdminController extends Controller
 
             $id      = $form["id"]->getData();
             $title   = $form['title']->getData();
-            $name    = $form['reviewerName']->getData();
-            $email   = $form['reviewerEmail']->getData();
-            $content = $form['reviewContent']->getData();
+            $name    = $form['name']->getData();
+            $email   = $form['email']->getData();
+            $content = $form['content']->getData();
             $rating  = $form['rating']->getData();
 
             $reviewDataArray = ['id'=>$id, 'title'=>$title, 'name'=>$name, 'email'=>$email, 'content'=>$content, 'rating'=>$rating];
@@ -411,9 +411,9 @@ class AdminController extends Controller
 
             if (
                 $reviewBeforeUpdate['title']         === $title &&
-                $reviewBeforeUpdate['reviewerName']  === $name &&
-                $reviewBeforeUpdate['reviewerEmail'] === $email &&
-                $reviewBeforeUpdate['reviewContent'] === $content &&
+                $reviewBeforeUpdate['name']  === $name &&
+                $reviewBeforeUpdate['email'] === $email &&
+                $reviewBeforeUpdate['content'] === $content &&
                 $reviewBeforeUpdate['rating']        === $rating
             ) {
                 $status = 'noDiff';

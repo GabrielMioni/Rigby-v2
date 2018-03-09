@@ -38,30 +38,30 @@ class Review
     /**
      * @var string
      *
-     * @ORM\Column(name="reviewer_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $reviewerName;
+    private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="reviewer_email", type="string", length=255, nullable=true)
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
-    private $reviewerEmail;
+    private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="review_content", type="string", length=255, nullable=true)
+     * @ORM\Column(name="content", type="string", length=255, nullable=true)
      */
-    private $reviewContent;
+    private $content;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="review_product", type="string", length=255, nullable=true)
+     * @ORM\Column(name="product", type="string", length=255, nullable=true)
      */
-    private $reviewProduct;
+    private $product;
 
     /**
      * @ORM\Column(type="datetime")
@@ -188,13 +188,13 @@ class Review
     /**
      * Set reviewerName
      *
-     * @param string $reviewerName
+     * @param string $name
      *
      * @return Review
      */
-    public function setReviewerName($reviewerName)
+    public function setName($name)
     {
-        $this->reviewerName = $reviewerName;
+        $this->name = $name;
 
         return $this;
     }
@@ -204,21 +204,21 @@ class Review
      *
      * @return string
      */
-    public function getReviewerName()
+    public function getName()
     {
-        return $this->reviewerName;
+        return $this->name;
     }
 
     /**
      * Set reviewerEmail
      *
-     * @param string $reviewerEmail
+     * @param string $email
      *
      * @return Review
      */
-    public function setReviewerEmail($reviewerEmail)
+    public function setEmail($email)
     {
-        $this->reviewerEmail = $reviewerEmail;
+        $this->email = $email;
 
         return $this;
     }
@@ -228,21 +228,21 @@ class Review
      *
      * @return string
      */
-    public function getReviewerEmail()
+    public function getEmail()
     {
-        return $this->reviewerEmail;
+        return $this->email;
     }
 
     /**
      * Set reviewContent
      *
-     * @param string $reviewContent
+     * @param string $content
      *
      * @return Review
      */
-    public function setReviewContent($reviewContent)
+    public function setContent($content)
     {
-        $this->reviewContent = $reviewContent;
+        $this->content = $content;
 
         return $this;
     }
@@ -252,21 +252,21 @@ class Review
      *
      * @return string
      */
-    public function getReviewContent()
+    public function getContent()
     {
-        return $this->reviewContent;
+        return $this->content;
     }
 
     /**
      * Set reviewProduct
      *
-     * @param string $reviewProduct
+     * @param string $product
      *
      * @return Review
      */
-    public function setReviewProduct($reviewProduct)
+    public function setProduct($product)
     {
-        $this->reviewProduct = $reviewProduct;
+        $this->product = $product;
 
         return $this;
     }
@@ -276,9 +276,9 @@ class Review
      *
      * @return string
      */
-    public function getReviewProduct()
+    public function getProduct()
     {
-        return $this->reviewProduct;
+        return $this->product;
     }
 
     /**

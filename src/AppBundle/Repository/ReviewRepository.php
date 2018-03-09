@@ -184,10 +184,10 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
             $generalSearch = trim($generalSearch) === '' ? '%' : $this->formatSearchWildcard($generalSearch);
 
             $queryBuilder->andWhere('review.title LIKE :generalSearch')
-                ->orWhere('review.reviewerName LIKE :generalSearch')
-                ->orWhere('review.reviewerEmail LIKE :generalSearch')
-                ->orWhere('review.reviewContent LIKE :generalSearch')
-                ->orWhere('review.reviewProduct LIKE :generalSearch')
+                ->orWhere('review.name LIKE :generalSearch')
+                ->orWhere('review.email LIKE :generalSearch')
+                ->orWhere('review.content LIKE :generalSearch')
+                ->orWhere('review.product LIKE :generalSearch')
                 ->setParameter('generalSearch', $generalSearch);
         }
 
@@ -208,6 +208,7 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
 
             $queryMask = $type . 'Search';
 
+            /*
             if ($type === 'name' || $type ==='email')
             {
                 $type = 'reviewer' . ucfirst($type);
@@ -216,6 +217,7 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
             {
                 $type = 'review' . ucfirst($type);
             }
+            */
 
             $value = $inputValue;
 

@@ -36,10 +36,10 @@ class ReviewFixture extends Fixture
             $nameAndEmail = $this->randomNameAndEmail();
 
             $review->setRating(rand(1,5));
-            $review->setReviewContent( $this->randomContent() );
-            $review->setReviewerEmail( $nameAndEmail['email'] );
-            $review->setReviewerName( $nameAndEmail['name'] );
-            $review->setReviewProduct( $this->randomProduct() );
+            $review->setContent( $this->randomContent() );
+            $review->setEmail( $nameAndEmail['email'] );
+            $review->setName( $nameAndEmail['name'] );
+            $review->setProduct( $this->randomProduct() );
             $review->setCreated( new \DateTime( date('Y-m-d H:i:s', strtotime($date) ) ) );
             $review->setUpdated( new \DateTime('now'));
             $review->setTitle( $this->randomTitle() );
