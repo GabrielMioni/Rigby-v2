@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\Admin;
 
 use AppBundle\Entity\Review;
+use Faker\Provider\cs_CZ\DateTime;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -14,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -354,9 +356,8 @@ class AdminController extends Controller
     /**
      * @Route("/ajaxReviewUpdate", name="updateReview")
      */
-    public function ReviewUpdateAjaxAction(Request $request)
+    public function AjaxReviewUpdateAction(Request $request)
     {
-
         $isAjax = $request->isXmlHttpRequest();
 
         if ($isAjax === false)
@@ -393,24 +394,53 @@ class AdminController extends Controller
         $form = $formBuilder->getForm();
         $form->handleRequest($request);
 
-         if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $id      = $form["id"]->getData();
+            $title   = $form['title']->getData();
+            $name    = $form['reviewerName']->getData();
+            $email   = $form['reviewerEmail']->getData();
+            $content = $form['reviewContent']->getData();
+            $rating  = $form['rating']->getData();
+
+            $reviewDataArray = ['id'=>$id, 'title'=>$title, 'name'=>$name, 'email'=>$email, 'content'=>$content, 'rating'=>$rating];
 
             $em = $this->getDoctrine()->getManager();
 
-            $id = $form["id"]->getData();
+            $reviewBeforeUpdate = $em->getRepository('AppBundle:Review')->getReviewById($id);
 
-            $status = json_encode($id);
+            if (
+                $reviewBeforeUpdate['title']         === $title &&
+                $reviewBeforeUpdate['reviewerName']  === $name &&
+                $reviewBeforeUpdate['reviewerEmail'] === $email &&
+                $reviewBeforeUpdate['reviewContent'] === $content &&
+                $reviewBeforeUpdate['rating']        === $rating
+            ) {
+                $status = 'noDiff';
+            } else {
+                $update = $em->getRepository('AppBundle:Review')->updateReview($reviewDataArray);
 
-            /*
-            $em->persist($review);
-            $em->flush();
-            $status = "saved";
-            */
+                $status = $update;
+            }
 
         } else{
              $status = "invalid";
         }
 
         return new JsonResponse(array('status' => $status));
+    }
+
+
+    /**
+     * @Route("/ajaxGetReviewById", name="getReviewById")
+     */
+    public function AjaxGetReviewById(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $id = $request->request->get('id');
+
+        $result = $em->getRepository('AppBundle:Review')->getReviewById($id);
+
+        return new JsonResponse(array($result));
     }
 }
