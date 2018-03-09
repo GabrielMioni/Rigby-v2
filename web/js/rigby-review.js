@@ -111,36 +111,72 @@ function editClick() {
     })
 }
 
-function updateClick() {
+function updateClick(inputState) {
     $(document).on('click', 'button', function (e) {
+
+        var button = $(this);
 
         if ($(this).attr('name') !== 'form[save]')
         {
-            return
+            return;
         }
 
         e.preventDefault();
 
+        if ($(this).hasClass('disabled'))
+        {
+            return;
+        }
+
+        var responseDiv = $(this).next('.ajaxResponse');
+
+        responseDiv.empty();
+        responseDiv.append('<i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>');
+
         var parentForm = $(this).closest('form');
-
-//        var id = parentForm.find( $("input[name*='form[id]']") ).val();
-
-        var data = parentForm.serialize();
+        var id = parentForm.find( $("input[name*='form[id]']") ).val();
+        var serialized = parentForm.serialize();
         var updateUrl = parentForm.find('.js-update-review').data('url');
 
         $.ajax({
             url: updateUrl,
             type: 'POST',
             dataType: 'json',
-            data: data,
+            data: serialized,
             success: function(data) {
-                console.log(data);
+                updateReviewDisplay(button, data, responseDiv);
+                inputState[id] = serialized;
             },
             error: function(data) {
                 console.log(data);
             }
         });
     })
+}
+
+function updateReviewDisplay(button, data, responseDiv) {
+    var message;
+
+    setTimeout(
+        function() {
+            if (data.status === 'noDiff')
+            {
+                message = 'Make a change before updating!';
+            }
+            if (data.status === 'inavlid')
+            {
+                message = 'Make sure no inputs are empty.';
+            }
+            if (data.status === 1)
+            {
+                message = '<i class="fas fa-check fa-lg text-success"></i>';
+            }
+            responseDiv.empty();
+            responseDiv.append(message);
+            button.addClass('disabled');
+        },
+        1000
+    );
 }
 
 function getReviewById(id) {
@@ -158,7 +194,48 @@ function getReviewById(id) {
     });
 }
 
+function initInputState() {
+    var inputState = {};
+
+    $('.review-update').each(function () {
+
+        var id = $(this).find( $("input[name*='form[id]']") ).val();
+
+        inputState[id] = $(this).serialize();
+
+    });
+
+    return inputState;
+}
+
+function checkInputState(inputState) {
+
+    $(document).on('keyup change', ':input', function() {
+
+        var parentForm = $(this).closest('form');
+
+        if ( ! parentForm.hasClass('review-update')) {
+            return;
+        }
+
+        var currentFormId = parentForm.find( $("input[name*='form[id]']") ).val();
+
+        var serialized = parentForm.serialize();
+
+        var button = parentForm.find( $("button[name='form[save]']") );
+
+        if (inputState[currentFormId] !== serialized) {
+            button.removeClass('disabled');
+        } else {
+            button.addClass('disabled');
+        }
+    })
+}
+
+
 $( document ).ready(function() {
+
+    var inputState = initInputState();
 
     var addCriteriaUrl = $('.js-add-criteria').data('url');
 
@@ -178,5 +255,7 @@ $( document ).ready(function() {
 
     editClick();
 
-    updateClick();
+    updateClick(inputState);
+
+    checkInputState(inputState);
 });
