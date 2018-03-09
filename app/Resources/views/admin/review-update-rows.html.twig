@@ -36,8 +36,8 @@
             <td colspan="7">
                 {{ form_start(form, {'attr': {'class': 'review-search'}}) }}
                 <div class="form-group">
-                    {{ form_label(form.title, 'Title') }}
-                    {{ form_widget(form.title) }}
+                    {{ form_label(form.rating, 'Rating') }}
+                    {{ form_widget(form.rating) }}
                 </div>
                 <div class="form-group">
                     {{ form_label(form.reviewerName, 'Name') }}
@@ -48,12 +48,12 @@
                     {{ form_widget(form.reviewerEmail) }}
                 </div>
                 <div class="form-group">
-                    {{ form_label(form.reviewContent, 'Content') }}
-                    {{ form_widget(form.reviewContent) }}
+                    {{ form_label(form.title, 'Title') }}
+                    {{ form_widget(form.title) }}
                 </div>
                 <div class="form-group">
-                    {{ form_label(form.rating, 'Rating') }}
-                    {{ form_widget(form.rating) }}
+                    {{ form_label(form.reviewContent, 'Content') }}
+                    {{ form_widget(form.reviewContent) }}
                 </div>
                 <div class="form-group">
                     {{ form_widget(form.save, {'attr': {'class': 'btn-primary'}}) }}
