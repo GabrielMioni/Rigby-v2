@@ -158,6 +158,8 @@ function updateClick(inputState, headerKeys) {
 function updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized, headerKeys) {
     var message;
 
+    toggleFormDisabled(button);
+
     setTimeout(
         function() {
             if (data.status === 'noDiff')
@@ -177,9 +179,18 @@ function updateReviewDisplay(button, data, responseDiv, originalSerialized, newS
             responseDiv.empty();
             responseDiv.append(message);
             button.addClass('disabled');
+
+            toggleFormDisabled(button);
         },
         1000
     );
+}
+
+function toggleFormDisabled(button) {
+    var inputs = button.closest('form').find(':input');
+    var isNotDisabled = ! $(inputs).is(':disabled');
+
+    $(inputs).prop('disabled', isNotDisabled);
 }
 
 function updateReviewTr(button, originalSerialized, newSerialized, headerKeys)
