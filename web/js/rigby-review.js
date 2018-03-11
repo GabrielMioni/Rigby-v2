@@ -111,7 +111,7 @@ function editClick() {
     })
 }
 
-function updateClick(inputState) {
+function updateClick(inputState, headerKeys) {
     $(document).on('click', 'button', function (e) {
 
         var button = $(this);
@@ -135,17 +135,18 @@ function updateClick(inputState) {
 
         var parentForm = $(this).closest('form');
         var id = parentForm.find( $("input[name*='form[id]']") ).val();
-        var serialized = parentForm.serialize();
+        var newSerialized = parentForm.serialize();
         var updateUrl = parentForm.find('.js-update-review').data('url');
+        var originalSerialized = inputState[id];
 
         $.ajax({
             url: updateUrl,
             type: 'POST',
             dataType: 'json',
-            data: serialized,
+            data: newSerialized,
             success: function(data) {
-                updateReviewDisplay(button, data, responseDiv);
-                inputState[id] = serialized;
+                updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized, headerKeys);
+                inputState[id] = newSerialized;
             },
             error: function(data) {
                 console.log(data);
@@ -154,7 +155,7 @@ function updateClick(inputState) {
     })
 }
 
-function updateReviewDisplay(button, data, responseDiv) {
+function updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized, headerKeys) {
     var message;
 
     setTimeout(
@@ -170,6 +171,8 @@ function updateReviewDisplay(button, data, responseDiv) {
             if (data.status === 1)
             {
                 message = '<i class="fas fa-check fa-lg text-success"></i>';
+
+                updateReviewTr(button, originalSerialized, newSerialized, headerKeys);
             }
             responseDiv.empty();
             responseDiv.append(message);
@@ -177,6 +180,92 @@ function updateReviewDisplay(button, data, responseDiv) {
         },
         1000
     );
+}
+
+function updateReviewTr(button, originalSerialized, newSerialized, headerKeys)
+{
+    var origValues = unserialize(originalSerialized);
+    var newValues  = unserialize(newSerialized);
+
+    var changeValues = {};
+
+    $.each( origValues, function( key, value ) {
+
+        if (newValues[key] !== value)
+        {
+            changeValues[key] = newValues[key];
+        }
+    });
+
+    var tr = button.closest('tr').prev();
+
+    $.each( changeValues, function( key, value ) {
+
+        var columnKey = headerKeys[key];
+        var rowTd = tr.find('td');
+        var column = rowTd[columnKey];
+
+        var newValue = key === 'rating' ? buildStarHtml(column, value) : krEncodeEntities(value);
+
+        $(column).empty();
+        $(column).append(newValue);
+    });
+}
+
+function buildStarHtml(column, value)
+{
+    var star = $(column).children(":first");
+    var starHtml = star[0].outerHTML;
+
+    var newStar = [];
+
+    while (newStar.length < value)
+    {
+        newStar.push(starHtml);
+    }
+
+    return newStar.join('');
+}
+
+function krEncodeEntities(s){
+    return $("<div/>").text(s).html();
+}
+
+function unserialize(serialized) {
+
+    serialized = decodeURIComponent(serialized).split('&');
+
+    var inputValues = {};
+
+    for (i = 0 ; i < serialized.length ; ++i)
+    {
+        var str = serialized[i];
+        var newKey = str.match(/\[(.*)\]/).pop();
+
+        inputValues[newKey] = str.substr(str.indexOf("=") + 1);
+    }
+
+    return inputValues;
+}
+
+function setHeaderKeys() {
+//    var tr = button.closest('tr').prev();
+//    var th = button.closest('table').find('thead').find('tr').children();
+
+    var table = $(document).find('table');
+    var th = table.find('thead').find('tr').children();
+
+    var headerKeys = {};
+
+    var i = 0;
+
+    th.each(function () {
+        var key = $(this).text().toLowerCase();
+        headerKeys[key] = i;
+        ++i;
+    });
+
+    return headerKeys;
 }
 
 function getReviewById(id) {
@@ -241,6 +330,9 @@ $( document ).ready(function() {
 
     var addCriteriaButton = $('#add-criteria');
 
+    var headerKeys = setHeaderKeys();
+    console.log(headerKeys);
+
     addCriteriaButton.show();
     initOperatorInput();
 
@@ -255,7 +347,9 @@ $( document ).ready(function() {
 
     editClick();
 
-    updateClick(inputState);
+    updateClick(inputState, headerKeys);
 
     checkInputState(inputState);
+
+
 });
