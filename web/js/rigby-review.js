@@ -1,47 +1,20 @@
-function appendCriteriaRow(data) {
-
-    var filter_count = $(document).find('#filterFields').children().length;
-
-    data = data.replace(/__name__/g, filter_count);
-
-    $('#filterFields').append(data);
-}
-
-function onTypeSelectChange() {
-    $(document).on('change', 'select', function() {
-
-        var select = $(this);
-        var name = select.attr('name');
-
-        if (name.indexOf('type') === -1) {
-            return false;
-        }
-
-        var selectOption1 = select.val() === 'created' ? 'Greater than' : 'Contains';
-        var selectOption2 = select.val() === 'created' ? 'Lesser than' : 'Doesn\'t contain';
-        var operatorSelect = select.parent().next('div').find('optgroup').children();
-
-        updateOperator(operatorSelect, selectOption1, selectOption2);
-    })
-}
-
 function initOperatorInput() {
 
-    var filterRows = $(document).find('.filter');
+    let filterRows = $(document).find('.filter');
 
     filterRows.each(function () {
 
-        var select = $(this).find('select');
+        let select = $(this).find('select');
 
-        var type = select[0];
+        let type = select[0];
 
-        var typeVal = $(type).val();
+        let typeVal = $(type).val();
 
         if (typeVal === 'created')
         {
-            var operator = select[1];
+            let operator = select[1];
 
-            var operatorSelect = $(operator).find('optgroup').children();
+            let operatorSelect = $(operator).find('optgroup').children();
 
             updateOperator(operatorSelect, 'Greater than', 'Lesser than');
         }
@@ -49,9 +22,27 @@ function initOperatorInput() {
     });
 }
 
+function onTypeSelectChange() {
+    $(document).on('change', 'select', function() {
+
+        let select = $(this);
+        let name = select.attr('name');
+
+        if (name.indexOf('type') === -1) {
+            return false;
+        }
+
+        let selectOption1 = select.val() === 'created' ? 'Greater than' : 'Contains';
+        let selectOption2 = select.val() === 'created' ? 'Lesser than' : 'Doesn\'t contain';
+        let operatorSelect = select.parent().next('div').find('optgroup').children();
+
+        updateOperator(operatorSelect, selectOption1, selectOption2);
+    })
+}
+
 function updateOperator(operatorSelect, selectOption1, selectOption2) {
     operatorSelect.each(function () {
-        var value = $(this).val();
+        let value = $(this).val();
 
         switch (value)
         {
@@ -67,36 +58,12 @@ function updateOperator(operatorSelect, selectOption1, selectOption2) {
     });
 }
 
-function ajaxAddFilterInput(addCriteriaUrl) {
-    $.ajax({
-            url: addCriteriaUrl,
-            dataType: 'text',
-            type: 'post',
-            contentType: 'application/x-www-form-urlencoded',
-            success: function(data) {
-                appendCriteriaRow(data);
-            },
-            error: function() {
-                console.log('error');
-            }
-    });
-}
-
-function deleteFilterRow() {
-    $(document).on('click', '.trash', function (e) {
-        e.preventDefault();
-
-        var parentRow = $(this).closest('.row');
-        parentRow.remove();
-    });
-}
-
 function editClick() {
     $(document).on('click', '.edit', function () {
 
-        var editToggle = $(this);
+        let editToggle = $(this);
 
-        var editRow = editToggle.parent().next('.update-row');
+        let editRow = editToggle.parent().next('.update-row');
 
         if (editRow.is(':visible'))
         {
@@ -111,256 +78,285 @@ function editClick() {
     })
 }
 
-function updateClick(inputState, headerKeys) {
-    $(document).on('click', 'button', function (e) {
-
-        var button = $(this);
-
-        if ($(this).attr('name') !== 'form[save]')
-        {
-            return;
-        }
-
-        e.preventDefault();
-
-        if ($(this).hasClass('disabled'))
-        {
-            return;
-        }
-
-        var responseDiv = $(this).next('.ajaxResponse');
-
-        responseDiv.empty();
-        responseDiv.append('<i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>');
-
-        var parentForm = $(this).closest('form');
-        var id = parentForm.find( $("input[name*='form[id]']") ).val();
-        var newSerialized = parentForm.serialize();
-        var updateUrl = parentForm.find('.js-update-review').data('url');
-        var originalSerialized = inputState[id];
-
-        $.ajax({
-            url: updateUrl,
-            type: 'POST',
-            dataType: 'json',
-            data: newSerialized,
-            success: function(data) {
-                updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized, headerKeys);
-                inputState[id] = newSerialized;
-            },
-            error: function(data) {
-                console.log(data);
-            }
-        });
-    })
-}
-
-function updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized, headerKeys) {
-    var message;
-
-    toggleFormDisabled(button);
-
-    setTimeout(
-        function() {
-            if (data.status === 'noDiff')
-            {
-                message = 'Make a change before updating!';
-            }
-            if (data.status === 'inavlid')
-            {
-                message = 'Make sure no inputs are empty.';
-            }
-            if (data.status === 1)
-            {
-                message = '<i class="fas fa-check fa-lg text-success"></i>';
-
-                updateReviewTr(button, originalSerialized, newSerialized, headerKeys);
-            }
-            responseDiv.empty();
-            responseDiv.append(message);
-            button.addClass('disabled');
-
-            toggleFormDisabled(button);
-        },
-        1000
-    );
-}
-
-function toggleFormDisabled(button) {
-    var inputs = button.closest('form').find(':input');
-    var isNotDisabled = ! $(inputs).is(':disabled');
-
-    $(inputs).prop('disabled', isNotDisabled);
-}
-
-function updateReviewTr(button, originalSerialized, newSerialized, headerKeys)
-{
-    var origValues = unserialize(originalSerialized);
-    var newValues  = unserialize(newSerialized);
-
-    var changeValues = {};
-
-    $.each( origValues, function( key, value ) {
-
-        if (newValues[key] !== value)
-        {
-            changeValues[key] = newValues[key];
-        }
-    });
-
-    var tr = button.closest('tr').prev();
-
-    $.each( changeValues, function( key, value ) {
-
-        var columnKey = headerKeys[key];
-        var rowTd = tr.find('td');
-        var column = rowTd[columnKey];
-
-        var newValue = key === 'rating' ? buildStarHtml(column, value) : krEncodeEntities(value);
-
-        $(column).empty();
-        $(column).append(newValue);
-    });
-}
-
-function buildStarHtml(column, value)
-{
-    var star = $(column).children(":first");
-    var starHtml = star[0].outerHTML;
-
-    var newStar = [];
-
-    while (newStar.length < value)
-    {
-        newStar.push(starHtml);
-    }
-
-    return newStar.join('');
-}
 
 function krEncodeEntities(s){
     return $("<div/>").text(s).html();
 }
 
-function unserialize(serialized) {
+class FilterRows
+{
+    constructor() {
+        this.addCriteriaUrl = $('.js-add-criteria').data('url');
+        this.addCriteriaButton = $('#add-criteria');
 
-    serialized = decodeURIComponent(serialized).split('&');
-
-    var inputValues = {};
-
-    for (i = 0 ; i < serialized.length ; ++i)
-    {
-        var str = serialized[i];
-        var newKey = str.match(/\[(.*)\]/).pop();
-
-        inputValues[newKey] = str.substr(str.indexOf("=") + 1);
+        this.addCriteriaButton.show();
+        this.criteriaButtonClick();
+        this.deleteFilterRow();
     }
 
-    return inputValues;
+    criteriaButtonClick() {
+
+        let addCriteriaUrl = this.addCriteriaUrl;
+
+        this.addCriteriaButton.on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: addCriteriaUrl,
+                dataType: 'text',
+                type: 'post',
+                contentType: 'application/x-www-form-urlencoded',
+                success: function(data) {
+                    FilterRows.appendCriteriaRow(data);
+                },
+                error: function() {
+                    console.log('error');
+                }
+            });
+        })
+    }
+
+    deleteFilterRow() {
+        $(document).on('click', '.trash', function (e) {
+            e.preventDefault();
+
+            let parentRow = $(this).closest('.row');
+            parentRow.remove();
+        });
+    }
+
+    static appendCriteriaRow(data) {
+
+        let filter_count = $(document).find('#filterFields').children().length;
+
+        data = data.replace(/__name__/g, filter_count);
+
+        $('#filterFields').append(data);
+    }
 }
 
-function setHeaderKeys() {
-//    var tr = button.closest('tr').prev();
-//    var th = button.closest('table').find('thead').find('tr').children();
+class RigbyUpdateReview {
+    constructor() {
+        this.inputState = this.initInputState();
+        this.headerKeys = this.setHeaderKeys();
 
-    var table = $(document).find('table');
-    var th = table.find('thead').find('tr').children();
+        this.toggleUpdateButtonDisabled();
+        this.updateClick();
+    }
 
-    var headerKeys = {};
+    initInputState() {
+        let inputState = {};
 
-    var i = 0;
+        $('.review-update').each(function () {
 
-    th.each(function () {
-        var key = $(this).text().toLowerCase();
-        headerKeys[key] = i;
-        ++i;
-    });
+            let id = $(this).find( $("input[name*='form[id]']") ).val();
 
-    return headerKeys;
-}
+            inputState[id] = $(this).serialize();
 
-function getReviewById(id) {
-    $.ajax({
-        url: '/ajaxGetReviewById',
-        type: 'POST',
-        dataType: 'json',
-        data: {id: id},
-        success: function(data) {
-            console.log(data);
-        },
-        error: function(data) {
-            console.log(data);
+        });
+
+        return inputState;
+    }
+
+    setHeaderKeys() {
+        let table = $(document).find('table');
+        let th = table.find('thead').find('tr').children();
+
+        let headerKeys = {};
+
+        let i = 0;
+
+        th.each(function () {
+            let key = $(this).text().toLowerCase();
+            headerKeys[key] = i;
+            ++i;
+        });
+
+        return headerKeys;
+    }
+
+    toggleUpdateButtonDisabled() {
+
+        let self = this;
+
+        $(document).on('keyup change', ':input', function() {
+
+            let parentForm = $(this).closest('form');
+
+            if ( ! parentForm.hasClass('review-update')) {
+                return;
+            }
+
+            let currentFormId = parentForm.find( $("input[name*='form[id]']") ).val();
+
+            let serialized = parentForm.serialize();
+
+            let button = parentForm.find( $("button[name='form[save]']") );
+
+            if (self.inputState[currentFormId] !== serialized) {
+                button.removeClass('disabled');
+            } else {
+                button.addClass('disabled');
+            }
+        })
+    }
+
+    updateClick() {
+
+        let self = this;
+
+        $(document).on('click', 'button', function (e) {
+
+            let button = $(this);
+
+            if ($(this).attr('name') !== 'form[save]')
+            {
+                return;
+            }
+
+            e.preventDefault();
+
+            if ($(this).hasClass('disabled'))
+            {
+                return;
+            }
+
+            let responseDiv = $(this).next('.ajaxResponse');
+
+            responseDiv.empty();
+            responseDiv.append('<i class="fa fa-spinner fa-spin" style="font-size:24px"></i></div>');
+
+            let parentForm = $(this).closest('form');
+            let id = parentForm.find( $("input[name*='form[id]']") ).val();
+            let newSerialized = parentForm.serialize();
+            let updateUrl = parentForm.find('.js-update-review').data('url');
+            let originalSerialized = self.inputState[id];
+
+            $.ajax({
+                url: updateUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: newSerialized,
+                success: function(data) {
+                    self.updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized);
+                    self.inputState[id] = newSerialized;
+                },
+                error: function(data) {
+                    console.log(data);
+                }
+            });
+        })
+    }
+
+    updateReviewDisplay(button, data, responseDiv, originalSerialized, newSerialized) {
+        let message;
+        let self = this;
+
+        RigbyUpdateReview.toggleFormDisabled(button);
+
+        setTimeout(
+            function() {
+                if (data.status === 'noDiff')
+                {
+                    message = 'Make a change before updating!';
+                }
+                if (data.status === 'inavlid')
+                {
+                    message = 'Make sure no inputs are empty.';
+                }
+                if (data.status === 1)
+                {
+                    message = '<i class="fas fa-check fa-lg text-success"></i>';
+
+                    self.updateReviewTr(button, originalSerialized, newSerialized);
+                }
+                responseDiv.empty();
+                responseDiv.append(message);
+                button.addClass('disabled');
+
+                RigbyUpdateReview.toggleFormDisabled(button);
+            },
+            1000
+        );
+    }
+
+    updateReviewTr(button, originalSerialized, newSerialized)
+    {
+        let origValues = RigbyUpdateReview.unserialize(originalSerialized);
+        let newValues  = RigbyUpdateReview.unserialize(newSerialized);
+        let headerKeys = this.headerKeys;
+
+        let changeValues = {};
+
+        $.each( origValues, function( key, value ) {
+
+            if (newValues[key] !== value)
+            {
+                changeValues[key] = newValues[key];
+            }
+        });
+
+        let tr = button.closest('tr').prev();
+
+        $.each( changeValues, function( key, value ) {
+
+            let columnKey = headerKeys[key];
+            let rowTd = tr.find('td');
+            let column = rowTd[columnKey];
+
+            let newValue = key === 'rating' ? RigbyUpdateReview.buildStarHtml(column, value) : krEncodeEntities(value);
+
+            $(column).empty();
+            $(column).append(newValue);
+        });
+    }
+
+    static toggleFormDisabled(button) {
+        let inputs = button.closest('form').find(':input');
+        let isNotDisabled = ! $(inputs).is(':disabled');
+
+        $(inputs).prop('disabled', isNotDisabled);
+    }
+
+    static buildStarHtml(column, value)
+    {
+        let star = $(column).children(":first");
+        console.log(column);
+        let starHtml = star[0].outerHTML;
+
+        let newStar = [];
+
+        while (newStar.length < value)
+        {
+            newStar.push(starHtml);
         }
-    });
-}
 
-function initInputState() {
-    var inputState = {};
+        return newStar.join('');
+    }
 
-    $('.review-update').each(function () {
+    static unserialize(serialized) {
 
-        var id = $(this).find( $("input[name*='form[id]']") ).val();
+        serialized = decodeURIComponent(serialized).split('&');
 
-        inputState[id] = $(this).serialize();
+        let inputValues = {};
 
-    });
+        for (let i = 0 ; i < serialized.length ; ++i)
+        {
+            let str = serialized[i];
+            let newKey = str.match(/\[(.*)\]/).pop();
 
-    return inputState;
-}
-
-function checkInputState(inputState) {
-
-    $(document).on('keyup change', ':input', function() {
-
-        var parentForm = $(this).closest('form');
-
-        if ( ! parentForm.hasClass('review-update')) {
-            return;
+            inputValues[newKey] = str.substr(str.indexOf("=") + 1);
         }
 
-        var currentFormId = parentForm.find( $("input[name*='form[id]']") ).val();
-
-        var serialized = parentForm.serialize();
-
-        var button = parentForm.find( $("button[name='form[save]']") );
-
-        if (inputState[currentFormId] !== serialized) {
-            button.removeClass('disabled');
-        } else {
-            button.addClass('disabled');
-        }
-    })
+        return inputValues;
+    }
 }
-
 
 $( document ).ready(function() {
 
-    var inputState = initInputState();
-
-    var addCriteriaUrl = $('.js-add-criteria').data('url');
-
-    var addCriteriaButton = $('#add-criteria');
-
-    var headerKeys = setHeaderKeys();
-    console.log(headerKeys);
-
-    addCriteriaButton.show();
     initOperatorInput();
-
-    addCriteriaButton.on('click', function (e) {
-        e.preventDefault();
-        ajaxAddFilterInput(addCriteriaUrl);
-    });
-
     onTypeSelectChange();
-
-    deleteFilterRow();
-
     editClick();
 
-    updateClick(inputState, headerKeys);
-
-    checkInputState(inputState);
-
-
+    new FilterRows();
+    new RigbyUpdateReview();
 });
