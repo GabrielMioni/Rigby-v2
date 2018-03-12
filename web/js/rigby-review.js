@@ -192,6 +192,13 @@ class RigbyUpdateReview {
 
             let button = parentForm.find( $("button[name='form[save]']") );
 
+            let responseDiv = parentForm.find('.ajaxResponse');
+
+            if (responseDiv.children().length > 0)
+            {
+                responseDiv.empty();
+            }
+
             if (self.inputState[currentFormId] !== serialized) {
                 button.removeClass('disabled');
             } else {
