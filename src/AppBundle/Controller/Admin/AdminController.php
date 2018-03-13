@@ -443,4 +443,17 @@ class AdminController extends Controller
 
         return new JsonResponse(array($result));
     }
+
+    /**
+     * @Route("/reviewSubmit", name="reviewSubmit")
+     */
+    public function reviewSubmitAction(Request $request)
+    {
+        $formBuilder = $this->createUpdateForm();
+        $reviewForm = $formBuilder->getForm();
+
+        return $this->render('public/review-submit.html.twig', array(
+            'form'=>$reviewForm->createView()
+        ));
+    }
 }
