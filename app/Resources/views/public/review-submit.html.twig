@@ -1,0 +1,26 @@
+{% extends "public/public-base.html.twig" %}
+
+{% block title %}<meta title="Submit Review">{% endblock %}
+{% block stylesheet %}
+    <style>
+        .rating-select {
+            width: 100%;
+            height: 20px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="form-review">
+        {{ form_start(form, {'attr': {'id': 'review-submit'}}) }}
+            <div class="form-group">
+                {{ form_label(form.rating, 'Rating') }}
+                {{ form_widget(form.rating, {'attr': {'class': 'hidden'}}) }}
+                <div class="rating-select">
+                    {% for i in 0..4 %}
+                        <span class="star star-empty"></span>
+                    {% endfor %}
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
