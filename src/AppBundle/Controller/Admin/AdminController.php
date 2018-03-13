@@ -434,7 +434,7 @@ class AdminController extends Controller
     /**
      * @Route("/ajaxGetReviewById", name="getReviewById")
      */
-    public function AjaxGetReviewById(Request $request)
+    public function AjaxGetReviewByIdAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $id = $request->request->get('id');
