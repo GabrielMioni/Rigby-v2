@@ -1,0 +1,14 @@
+.star {
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    background-size: cover;
+}
+
+.star-full {
+    background-image: url('../images/star-full48.png');
+}
+
+.star-empty {
+    background-image: url('../images/star-grey.png');
+}
