@@ -16,9 +16,7 @@
                 {{ form_label(form.rating, 'Rating') }}
                 {{ form_widget(form.rating, {'attr': {'class': 'hidden'}}) }}
                 <div class="rating-select">
-                    {% for i in 0..4 %}
-                        <span class="star star-empty"></span>
-                    {% endfor %}
+                    {% for i in 0..4 %}<span class="star"></span>{% endfor %}
                 </div>
             </div>
         {{ form_end(form) }}
