@@ -2,8 +2,10 @@ class Stars {
 
     constructor() {
         this.starState = [0,0,0,0,0];
-        this.ratingSelect = $(document).find('.rating-select');
-        this.stars = this.ratingSelect.children();
+        this.ratingControl = $(document).find('.rating-control');
+        this.ratingSelect = this.ratingControl.parent().find('select');
+
+        this.stars = this.ratingControl.children();
 
         this.starClick();
         this.starHover();
@@ -31,8 +33,19 @@ class Stars {
             {
                 self.starState = newState;
                 self.evaluateState();
+                self.setReviewValute(starIndex);
             }
         });
+    }
+
+    setReviewValute(val) {
+
+        let i = [1,2,3,4,5];
+
+        if ($.inArray(val, i))
+        {
+            this.ratingSelect.val(val);
+        }
     }
 
     starHover() {
@@ -65,7 +78,7 @@ class Stars {
 
         let self = this;
 
-        $(this.ratingSelect).on('mouseleave', function () {
+        $(this.ratingControl).on('mouseleave', function () {
             self.evaluateState();
         });
     }
