@@ -410,11 +410,11 @@ class AdminController extends Controller
             $reviewBeforeUpdate = $em->getRepository('AppBundle:Review')->getReviewById($id);
 
             if (
-                $reviewBeforeUpdate['title']         === $title &&
-                $reviewBeforeUpdate['name']  === $name &&
-                $reviewBeforeUpdate['email'] === $email &&
+                $reviewBeforeUpdate['title']   === $title &&
+                $reviewBeforeUpdate['name']    === $name &&
+                $reviewBeforeUpdate['email']   === $email &&
                 $reviewBeforeUpdate['content'] === $content &&
-                $reviewBeforeUpdate['rating']        === $rating
+                $reviewBeforeUpdate['rating']  === $rating
             ) {
                 $status = 'noDiff';
             } else {
@@ -429,7 +429,6 @@ class AdminController extends Controller
 
         return new JsonResponse(array('status' => $status));
     }
-
 
     /**
      * @Route("/ajaxGetReviewById", name="getReviewById")
@@ -451,6 +450,32 @@ class AdminController extends Controller
     {
         $formBuilder = $this->createUpdateForm();
         $reviewForm = $formBuilder->getForm();
+
+        $reviewForm->handleRequest($request);
+
+        if ($reviewForm->isSubmitted() && $reviewForm->isValid() )
+        {
+            $rating = $reviewForm['rating']->getData();
+            $name  = $reviewForm['name']->getData();
+            $email = $reviewForm['email']->getData();
+            $title = $reviewForm['title']->getData();
+            $content = $reviewForm['content']->getData();
+
+            $dateTimeObj = new \DateTime('now');
+
+            $newReview = new Review();
+            $newReview->setRating($rating);
+            $newReview->setName($name);
+            $newReview->setEmail($email);
+            $newReview->setTitle($title);
+            $newReview->setContent($content);
+            $newReview->setCreated($dateTimeObj);
+            $newReview->setUpdated($dateTimeObj);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($newReview);
+            $em->flush();
+        }
 
         return $this->render('public/review-submit.html.twig', array(
             'form'=>$reviewForm->createView()
