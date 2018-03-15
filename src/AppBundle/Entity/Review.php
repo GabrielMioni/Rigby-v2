@@ -74,6 +74,29 @@ class Review
     private $updated;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="ip", type="string", length=39, nullable=true)
+     */
+    private $ip;
+
+    /**
+     * @param mixed $ip
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
      * @return mixed
      */
     public function getCreated()
