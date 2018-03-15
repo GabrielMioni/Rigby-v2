@@ -327,4 +327,30 @@ class ReviewRepository extends \Doctrine\ORM\EntityRepository
 
         return array();
     }
+
+    function getReviewByIp($ip)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.created')
+            ->where('r.ip = :ip')
+            ->orderBy('r.created', 'DESC')
+            ->setParameter('ip', $ip);
+        $query = $qb->getQuery();
+
+        $arrayResult = $query->getArrayResult();
+
+        if ($arrayResult > 0)
+        {
+            $out = array();
+
+            foreach ($arrayResult as $key=>$value)
+            {
+                $out[] = $value['created']->format('Y-m-d H:i:s');
+            }
+
+            return $out;
+        }
+
+        return array();
+    }
 }
