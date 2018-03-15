@@ -42,6 +42,7 @@ class ReviewFixture extends Fixture
             $review->setProduct( $this->randomProduct() );
             $review->setCreated( new \DateTime( date('Y-m-d H:i:s', strtotime($date) ) ) );
             $review->setUpdated( new \DateTime('now'));
+            $review->setIp($this->randomIp());
             $review->setTitle( $this->randomTitle() );
 
             $manager->persist($review);
@@ -129,6 +130,11 @@ class ReviewFixture extends Fixture
         $content = $this->faker->paragraph($paragrahCount);
 
         return substr($content, 0, 600);
+    }
+
+    protected function randomIp()
+    {
+        return $this->faker->ipv4;
     }
 
     protected function randomNameAndEmail()
