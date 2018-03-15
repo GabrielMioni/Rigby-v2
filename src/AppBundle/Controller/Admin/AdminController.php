@@ -455,6 +455,23 @@ class AdminController extends Controller
 
         if ($reviewForm->isSubmitted() && $reviewForm->isValid() )
         {
+            $ip = $request->getClientIp();
+
+            $em = $this->getDoctrine()->getManager();
+
+            $ipResult = $em->getRepository('AppBundle:Review')->getReviewByIp($ip);
+
+            if (count($ipResult) > 0)
+            {
+                $minsSinceLastSubmit = ( time() - strtotime($ipResult[0]) ) / 60;
+
+                if ($minsSinceLastSubmit < 5)
+                {
+                    dump($minsSinceLastSubmit);
+                    dump('Too soon');
+                }
+            }
+
             $rating = $reviewForm['rating']->getData();
             $name  = $reviewForm['name']->getData();
             $email = $reviewForm['email']->getData();
@@ -471,8 +488,8 @@ class AdminController extends Controller
             $newReview->setContent($content);
             $newReview->setCreated($dateTimeObj);
             $newReview->setUpdated($dateTimeObj);
+            $newReview->setIp($ip);
 
-            $em = $this->getDoctrine()->getManager();
             $em->persist($newReview);
             $em->flush();
         }
