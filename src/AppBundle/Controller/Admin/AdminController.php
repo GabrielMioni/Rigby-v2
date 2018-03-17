@@ -453,6 +453,9 @@ class AdminController extends Controller
 
         $reviewForm->handleRequest($request);
 
+        $noGo = null;
+        $thankYou = null;
+
         if ($reviewForm->isSubmitted() && $reviewForm->isValid() )
         {
             $ip = $request->getClientIp();
@@ -461,40 +464,40 @@ class AdminController extends Controller
 
             $ipResult = $em->getRepository('AppBundle:Review')->getReviewByIp($ip);
 
-            if (count($ipResult) > 0)
-            {
-                $minsSinceLastSubmit = ( time() - strtotime($ipResult[0]) ) / 60;
+            $mins = count($ipResult) > 0 ? $minsSinceLastSubmit = ( time() - strtotime($ipResult[0]) ) / 60 : null;
 
-                if ($minsSinceLastSubmit < 5)
-                {
-                    dump($minsSinceLastSubmit);
-                    dump('Too soon');
-                }
+            $noGo = $mins !== null & $mins < 5 ? 'tooSoon' : null;
+
+            if ($noGo === null)
+            {
+                $rating = $reviewForm['rating']->getData();
+                $name  = $reviewForm['name']->getData();
+                $email = $reviewForm['email']->getData();
+                $title = $reviewForm['title']->getData();
+                $content = $reviewForm['content']->getData();
+
+                $dateTimeObj = new \DateTime('now');
+
+                $newReview = new Review();
+                $newReview->setRating($rating);
+                $newReview->setName($name);
+                $newReview->setEmail($email);
+                $newReview->setTitle($title);
+                $newReview->setContent($content);
+                $newReview->setCreated($dateTimeObj);
+                $newReview->setUpdated($dateTimeObj);
+                $newReview->setIp($ip);
+
+                $em->persist($newReview);
+                $em->flush();
+                $thankYou = true;
             }
 
-            $rating = $reviewForm['rating']->getData();
-            $name  = $reviewForm['name']->getData();
-            $email = $reviewForm['email']->getData();
-            $title = $reviewForm['title']->getData();
-            $content = $reviewForm['content']->getData();
-
-            $dateTimeObj = new \DateTime('now');
-
-            $newReview = new Review();
-            $newReview->setRating($rating);
-            $newReview->setName($name);
-            $newReview->setEmail($email);
-            $newReview->setTitle($title);
-            $newReview->setContent($content);
-            $newReview->setCreated($dateTimeObj);
-            $newReview->setUpdated($dateTimeObj);
-            $newReview->setIp($ip);
-
-            $em->persist($newReview);
-            $em->flush();
         }
 
         return $this->render('public/review-submit.html.twig', array(
+            'noGo'=>$noGo,
+            'thankYou'=>$thankYou,
             'form'=>$reviewForm->createView()
         ));
     }
