@@ -455,6 +455,7 @@ class AdminController extends Controller
             'label' => false,
             'required'=>false
         ));
+        $formBuilder->remove('id')->remove('created');
         $reviewForm = $formBuilder->getForm();
 
         $reviewForm->handleRequest($request);
