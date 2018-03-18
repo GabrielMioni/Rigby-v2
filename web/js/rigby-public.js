@@ -130,6 +130,10 @@ class submitReview
 
             $(this).parent().append('<div id="ajaxEllipsis"></div>');
 
+            formContainer.find('.rating-control').append('<div id="starShade"></div>');
+
+            $(document).find('#starShade').css({'background-color':''});
+
             $.ajax({
                 url: self.submitUrl,
                 type: 'POST',

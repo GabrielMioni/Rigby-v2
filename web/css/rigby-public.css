@@ -3,6 +3,10 @@
     overflow: hidden;
 }
 
+.rating-control {
+    position: relative;
+}
+
 .star {
     height: 30px;
     width: 30px;
@@ -16,14 +20,14 @@
     background-image: url('../images/star-full48.png');
 }
 
-/*
-#ajaxEllipsis {
-    height: 100px;
-    width: 100px;
-    background-image: url('../images/ellipsis.gif');
-    background-size: contain;
+#starShade {
+    background-color: rgba(999,999,999, .6);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
 }
-*/
+
 #ajaxEllipsis {
     height: 20px;
     width: 80px;
