@@ -98,7 +98,7 @@ class Stars {
             }
             if (value === 1 && starFull === false)
             {
-                $(starCurrent).adClass('star-full');
+                $(starCurrent).addClass('star-full');
             }
         });
     }
