@@ -110,6 +110,8 @@ class submitReview
         this.submitForm = $(document).find('#review-submit');
         this.submitUrl = this.submitForm.find('.js-submit').data('url');
 
+        this.submitForm.validator();
+
         this.submitClick();
     }
 
@@ -120,6 +122,14 @@ class submitReview
         let self = this;
 
         $(button).on('click', function (e) {
+
+            e.isDefaultPrevented();
+
+            if ($(this).hasClass('disabled'))
+            {
+                return;
+            }
+
             e.preventDefault();
 
             let serialized = $(self.submitForm).serialize();
