@@ -25,19 +25,23 @@
             </div>
             <div class="form-group">
                 {{ form_label(form.name, 'Name') }}
-                {{ form_widget(form.name) }}
+                {{ form_widget(form.name, { 'attr': {'data-error': 'Please include your name'} }) }}
+                <div class="help-block with-errors"></div>
             </div>
             <div class="form-group">
                 {{ form_label(form.email, 'Email') }}
-                {{ form_widget(form.email) }}
+                {{ form_widget(form.email, { 'attr': {'data-error': 'Please include your email address'} }) }}
+                <div class="help-block with-errors"></div>
             </div>
             <div class="form-group">
                 {{ form_label(form.title, 'Title') }}
-                {{ form_widget(form.title) }}
+                {{ form_widget(form.title, { 'attr': {'data-error': 'A title is required'} }) }}
+                <div class="help-block with-errors"></div>
             </div>
             <div class="form-group">
                 {{ form_label(form.content, 'Content') }}
-                {{ form_widget(form.content) }}
+                {{ form_widget(form.content, { 'attr': {'data-error': 'Say something in your review'} }) }}
+                <div class="help-block with-errors"></div>
             </div>
             <div class="form-group">
                 {{ form_widget( form.save, {'label' : 'Submit Review', 'attr': {'class': 'btn btn-primary'}}) }}
