@@ -98,13 +98,91 @@ class Stars {
             }
             if (value === 1 && starFull === false)
             {
-                $(starCurrent).addClass('star-full');
+                $(starCurrent).adClass('star-full');
             }
         });
+    }
+}
+
+class submitReview
+{
+    constructor() {
+        this.submitForm = $(document).find('#review-submit');
+        this.submitUrl = this.submitForm.find('.js-submit').data('url');
+
+        this.submitClick();
+    }
+
+    submitClick() {
+
+        let button = this.submitForm.find('button');
+        let formContainer = this.submitForm.parent();
+        let self = this;
+
+        $(button).on('click', function (e) {
+            e.preventDefault();
+
+            let serialized = $(self.submitForm).serialize();
+
+            let inputs = self.submitForm.find(':input');
+
+            inputs.prop('disabled', true);
+
+            $(this).parent().append('<div id="ajaxEllipsis"></div>');
+
+            $.ajax({
+                url: self.submitUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: serialized,
+                success: function(data) {
+                    self.updateDisplay(data, formContainer)
+                },
+                error: function(data) {
+                    self.updateDisplay(data, formContainer, false)
+                }
+            })
+        })
+    }
+
+    updateDisplay(data, formContainer, submitSuccess = true) {
+        let msg;
+
+        let tooSoonMsg = "<div class=\"alert alert-warning\"><strong>Too many submits!</strong> It looks like you're making too many review submissions too quickly. Please try again later. </div>";
+        let successMsg = "<div class=\"alert alert-success\"><strong>Thank you!</strong> Your review has been received. </div>";
+        let errorMsg   = "<div class=\"alert alert-danger\"><strong>Uh oh.</strong> There was as problem submitting your review. Please try again later. </div>";
+
+        setTimeout(
+            function() {
+                $(formContainer).find('#ajaxEllipsis').fadeOut(function () {
+                    $(this).remove();
+
+                    if (data.noGo === 'tooSoon')
+                    {
+                        msg = tooSoonMsg;
+                    }
+                    if (data.thankYou === true)
+                    {
+                        msg = successMsg;
+                    }
+                    if (submitSuccess === false)
+                    {
+                        msg = errorMsg;
+                    }
+                    $(formContainer).animate({'height':'100px'}, 'slow', function () {
+                        $(formContainer).children().fadeOut().empty().delay(500, function () {
+                            $(formContainer).append(msg);
+                        });
+                    });
+                });
+            },
+            2000
+        );
     }
 }
 
 
 $(document).ready(function () {
     new Stars();
+    new submitReview();
 });
