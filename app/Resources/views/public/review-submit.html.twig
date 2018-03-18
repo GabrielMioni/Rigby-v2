@@ -42,6 +42,7 @@
             <div class="form-group">
                 {{ form_widget( form.save, {'label' : 'Submit Review', 'attr': {'class': 'btn btn-primary'}}) }}
             </div>
+            <div class="js-submit" data-url="{{ path('reviewSubmit') }}"></div>
             {{ form_end(form) }}
         </div>
     {% endif %}
