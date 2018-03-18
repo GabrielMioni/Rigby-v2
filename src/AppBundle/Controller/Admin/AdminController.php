@@ -449,17 +449,18 @@ class AdminController extends Controller
     public function reviewSubmitAction(Request $request)
     {
         $formBuilder = $this->createUpdateForm();
+
+        $formBuilder->add('covfefe', TextType::class, array(
+            'mapped' => false,
+            'label' => false,
+            'required'=>false
+        ));
         $reviewForm = $formBuilder->getForm();
 
         $reviewForm->handleRequest($request);
 
         $noGo = null;
         $thankYou = null;
-
-        if ($reviewForm->isSubmitted() && ! $reviewForm->isValid() )
-        {
-            $noGo = 'formInvalid';
-        }
 
         if ($reviewForm->isSubmitted() && $reviewForm->isValid() )
         {
@@ -471,7 +472,12 @@ class AdminController extends Controller
 
             $mins = count($ipResult) > 0 ? $minsSinceLastSubmit = ( time() - strtotime($ipResult[0]) ) / 60 : null;
 
-            $noGo = $mins !== null & $mins < 5 ? 'tooSoon' : null;
+            if ($reviewForm['covfefe']->getData() !== null)
+            {
+                $noGo = 'formInvalid';
+            } else {
+                $noGo = $mins !== null & $mins < 5 ? 'tooSoon' : null;
+            }
 
             if ($noGo === null)
             {

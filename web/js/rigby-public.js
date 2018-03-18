@@ -175,6 +175,10 @@ class submitReview
                     {
                         msg = tooSoonMsg;
                     }
+                    if (data.noGo === 'formInvalid')
+                    {
+                        msg = errorMsg;
+                    }
                     if (data.thankYou === true)
                     {
                         msg = successMsg;
