@@ -456,6 +456,11 @@ class AdminController extends Controller
         $noGo = null;
         $thankYou = null;
 
+        if ($reviewForm->isSubmitted() && ! $reviewForm->isValid() )
+        {
+            $noGo = 'formInvalid';
+        }
+
         if ($reviewForm->isSubmitted() && $reviewForm->isValid() )
         {
             $ip = $request->getClientIp();
@@ -493,6 +498,10 @@ class AdminController extends Controller
                 $thankYou = true;
             }
 
+            if ($request->isXmlHttpRequest())
+            {
+                return new JsonResponse((array('noGo'=>$noGo, 'thankYou'=>$thankYou)));
+            }
         }
 
         return $this->render('public/review-submit.html.twig', array(
