@@ -1,5 +1,6 @@
 .form-review {
     padding: 15px;
+    overflow: hidden;
 }
 
 .star {
@@ -13,4 +14,23 @@
 
 .star.star-full {
     background-image: url('../images/star-full48.png');
+}
+
+/*
+#ajaxEllipsis {
+    height: 100px;
+    width: 100px;
+    background-image: url('../images/ellipsis.gif');
+    background-size: contain;
+}
+*/
+#ajaxEllipsis {
+    height: 20px;
+    width: 80px;
+    background-image: url('../images/ellipsis.gif');
+    background-size: cover;
+    background-position: center;
+    display: inline-block;
+    position: relative;
+    top: 5px;
 }
