@@ -455,7 +455,20 @@ class AdminController extends Controller
             'label' => false,
             'required'=>false
         ));
-        $formBuilder->remove('id')->remove('created');
+        $formBuilder->remove('id')->remove('created')->remove('rating');
+
+        $formBuilder ->add('rating', ChoiceType::class, array(
+            'choices'  => array(
+                'Select a rating' => '',
+                '5' => 5,
+                '4' => 4,
+                '3' => 3,
+                '2' => 2,
+                '1' => 1,
+            ),
+            'data' => '',
+        ));
+
         $reviewForm = $formBuilder->getForm();
 
         $reviewForm->handleRequest($request);
