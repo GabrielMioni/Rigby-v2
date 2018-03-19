@@ -33,16 +33,23 @@ class Stars {
             {
                 self.starState = newState;
                 self.evaluateState();
-                self.setReviewValute(starIndex);
+                self.setReviewValue(starIndex);
+            }
+
+            let errorMsgContainer = $(this).parent().next('.help-block');
+
+            if (errorMsgContainer.children().length > 0)
+            {
+                errorMsgContainer.empty();
             }
         });
     }
 
-    setReviewValute(val) {
+    setReviewValue(val) {
 
         let i = [1,2,3,4,5];
 
-        if ($.inArray(val, i))
+        if ($.inArray(val, i) !== -1)
         {
             this.ratingSelect.val(val);
         }
