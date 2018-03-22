@@ -444,9 +444,9 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/reviewSubmit", name="reviewSubmit")
+     * @Route("/reviewSubmit/{productId}", name="reviewSubmit")
      */
-    public function reviewSubmitAction(Request $request)
+    public function reviewSubmitAction(Request $request, $productId = null)
     {
         $formBuilder = $this->createUpdateForm();
 
@@ -467,6 +467,15 @@ class AdminController extends Controller
                 '1' => 1,
             ),
             'data' => '',
+        ));
+
+        $productFound = $this->getProductDataById($productId) !== null ? $productId : null;
+
+        $formBuilder->add('product', HiddenType::class, array(
+            'mapped' => false,
+            'label' => false,
+            'required' => true,
+            'data' => $productFound,
         ));
 
         $reviewForm = $formBuilder->getForm();
@@ -501,6 +510,8 @@ class AdminController extends Controller
                 $title = $reviewForm['title']->getData();
                 $content = $reviewForm['content']->getData();
 
+                $product = isset($reviewForm['product']) === true ? $reviewForm['product']->getData() : null;
+
                 $dateTimeObj = new \DateTime('now');
 
                 $newReview = new Review();
@@ -511,6 +522,7 @@ class AdminController extends Controller
                 $newReview->setContent($content);
                 $newReview->setCreated($dateTimeObj);
                 $newReview->setUpdated($dateTimeObj);
+                $newReview->setProduct($product);
                 $newReview->setIp($ip);
 
                 $em->persist($newReview);
@@ -529,5 +541,14 @@ class AdminController extends Controller
             'thankYou'=>$thankYou,
             'form'=>$reviewForm->createView()
         ));
+    }
+
+    protected function getProductDataById($productId)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $productResult = $em->getRepository('AppBundle:Product')->getProductById($productId);
+
+        return $productResult;
     }
 }
