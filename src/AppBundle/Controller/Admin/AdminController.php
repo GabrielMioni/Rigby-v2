@@ -551,4 +551,20 @@ class AdminController extends Controller
 
         return $productResult;
     }
+
+    /**
+     * @Route("/products", name="products")
+     */
+    public function productAction()
+    {
+        $search = array();
+        $productSearch = $this->createFormBuilder($search);
+
+        $productSearch->add('search', TextType::class)
+                      ->add('submit', SubmitType::class, array('label' => 'Submit Search'));
+
+        $searchForm = $productSearch->getForm();
+
+        return $this->render('admin/products.html.twig', array('form'=>$searchForm->createView()));
+    }
 }

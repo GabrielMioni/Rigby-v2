@@ -1,0 +1,29 @@
+{% extends "admin/admin-base.html.twig" %}
+
+{% block title %}Products{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/rigby-admin.css') }}" >
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <div id="search" class="container">
+        {{ form_start(form, {'attr': {'id': 'product-search'}}) }}
+            <div class="form-group">
+                {{ form_label(form.search) }}
+                {{ form_widget(form.search) }}
+            </div>
+            <div class="form-group">
+                {{ form_widget(form.submit, {'attr': {'class': 'btn-primary'}}) }}
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+    <div id="products">
+        
+    </div>
+{% endblock %}
