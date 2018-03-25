@@ -46,11 +46,7 @@ class ProductFixture extends Fixture
 
         while (count($names) < $productsRequested)
         {
-            $randomName = $this->randomProductName();
-
-            $occurrenceCount = $this->getOccurrenceCount($names, $randomName);
-
-            $names[] = $occurrenceCount < 0 ? $randomName . ($occurrenceCount + 1) : $randomName;
+            $names[] = $this->randomProductName();
         }
 
         return $names;
