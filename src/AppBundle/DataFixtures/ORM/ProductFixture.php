@@ -61,7 +61,7 @@ class ProductFixture extends Fixture
 
         while (count($ids) < $productsRequested)
         {
-            while (! in_array($id = $this->randomProductKey(), $ids))
+            while (! in_array($id = $this->randomProductId(), $ids))
             {
                 $ids[] = $id;
             }
@@ -116,7 +116,7 @@ class ProductFixture extends Fixture
         return $productName;
     }
 
-    protected function randomProductKey() {
+    public function randomProductId() {
 
         $alphabets = range('A', 'Z');
 
