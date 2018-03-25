@@ -56,14 +56,24 @@ class ProductFixture extends Fixture
         return $names;
     }
 
-    protected function buildProductIds($productsRequested) {
+    public function buildProductIds($productsRequested) {
         $ids = [];
 
-        while (count($ids) < $productsRequested)
+        for ($i = 0 ; $i < $productsRequested ; ++$i)
         {
-            while (! in_array($id = $this->randomProductId(), $ids))
+            $ids[] = $this->randomProductId();
+        }
+
+        while (count(array_unique($ids)) !== $productsRequested)
+        {
+            $uniqueCount = count(array_unique($ids));
+            $needed = $productsRequested - $uniqueCount;
+
+            $ids = array_unique($ids);
+
+            for ($x = 0 ; $x < $needed ; ++$x)
             {
-                $ids[] = $id;
+                $ids[] = $this->randomProductId();
             }
         }
 
