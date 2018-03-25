@@ -52,6 +52,14 @@ class ProductFixtureTest extends PHPUnit_Framework_TestCase
         $this->printArray($namesArray);
     }
 
+
+    public function testRandomPrice()
+    {
+        $price = $this->productFixtureObj->randomPrice();
+
+        echo "Price: $price" . PHP_EOL;
+    }
+
     protected function printArray(array $array)
     {
         foreach ($array as $value)

@@ -158,7 +158,7 @@ class ProductFixture extends Fixture
         return $key;
     }
 
-    protected function randomPrice() {
+    public function randomPrice() {
 
         $dollar = rand(5, 100);
 
@@ -166,6 +166,6 @@ class ProductFixture extends Fixture
 
         $cents = $change[rand(0, count($change) -1)];
 
-        return '$'. "$dollar.$cents";
+        return "$dollar.$cents";
     }
 }
