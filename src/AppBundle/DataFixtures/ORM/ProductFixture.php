@@ -40,7 +40,7 @@ class ProductFixture extends Fixture
         }
     }
 
-    protected function buildProductNames($productsRequested) {
+    public function buildProductNames($productsRequested) {
 
         $names = [];
 
@@ -95,35 +95,48 @@ class ProductFixture extends Fixture
         return $occurrenceCount;
     }
 
-    protected function randomProductName() {
-
-        $rand = rand(0, 3);
+    public function randomProductName() {
 
         $word = '';
 
-        switch ($rand)
+        while (strlen($word) < 4)
         {
-            case 0:
-                $word = $this->faker->city;
-                break;
-            case 1:
-                $word = $this->faker->company;
-                break;
-            case 2:
-                $word = $this->faker->firstName;
-                break;
-            case 3:
-                $word = $this->faker->country;
-                break;
+            $rand = rand(0, 4);
+
+            switch ($rand)
+            {
+                case 0:
+                    $word = $this->faker->city;
+                    break;
+                case 1:
+                    $word = $this->faker->company;
+                    break;
+                case 2:
+                    $word = $this->faker->firstName;
+                    break;
+                case 3:
+                    $word = $this->faker->colorName;
+                    break;
+                case 4:
+                    $word = $this->faker->monthName;
+                    break;
+            }
+
+            if (strpos($word, '-') !== -1)
+            {
+                $word = substr($word, 0, strpos($word, '-'));
+            }
+
+            $word = preg_replace('/[.,]/', '', $word);
+
+            $wordParts = explode(' ', $word);
+
+            $randWordIndex = rand(0, count($wordParts) -1);
+
+            $word = $wordParts[$randWordIndex];
         }
 
-        $expl = explode(' ', $word);
-
-        $randWordIndex = rand(0, count($expl) -1);
-
-        $productName = $expl[$randWordIndex];
-
-        return $productName;
+        return $word;
     }
 
     public function randomProductId() {
