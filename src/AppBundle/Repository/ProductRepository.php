@@ -22,4 +22,15 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         return $result;
     }
+
+    public function getAllProductIds()
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('p.productId');
+
+        $query = $qb->getQuery();
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
 }
