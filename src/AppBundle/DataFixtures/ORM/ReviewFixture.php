@@ -5,15 +5,23 @@ namespace AppBundle\DataFixtures\ORM;
 use AppBundle\Entity\Review;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker;
 
-class ReviewFixture extends Fixture
+class ReviewFixture extends Fixture implements DependentFixtureInterface
 {
     protected $faker;
 
     public function __construct()
     {
         $this->faker = Faker\Factory::create();
+    }
+
+    public function getDependencies()
+    {
+        return array(
+            ProductFixture::class,
+        );
     }
 
     /**
@@ -28,18 +36,20 @@ class ReviewFixture extends Fixture
         $startTime = '2018/02/01';
 
         $reviewDates = $this->makeReviewDates($reviewsRequested, 7, $startTime);
+        $productIds = $this->getAllProductIds($manager);
 
         foreach ($reviewDates as $date)
         {
             $review = new Review();
 
             $nameAndEmail = $this->randomNameAndEmail();
+            $randomProduct = $this->getRandomProductId($productIds);
 
             $review->setRating(rand(1,5));
             $review->setContent( $this->randomContent() );
             $review->setEmail( $nameAndEmail['email'] );
             $review->setName( $nameAndEmail['name'] );
-            $review->setProduct( $this->randomProduct() );
+            $review->setProduct ($randomProduct );
             $review->setCreated( new \DateTime( date('Y-m-d H:i:s', strtotime($date) ) ) );
             $review->setUpdated( new \DateTime('now'));
             $review->setIp($this->randomIp());
@@ -112,13 +122,6 @@ class ReviewFixture extends Fixture
         return strtotime($a) - strtotime($b);
     }
 
-    protected function randomProduct()
-    {
-        $products = ['GOOP', 'DNGLS', 'SNACKS', 'FATBCK', 'BEER', 'CAT_FRNDZ', 'JNGLS', 'WEIRDZ'];
-        
-        return $products[rand(0, count($products)-1)];
-    }
-
     protected function randomTitle()
     {
         return $this->faker->sentence();
@@ -144,5 +147,22 @@ class ReviewFixture extends Fixture
         $email = $firstName . '@' . $this->faker->domainName;
 
         return ['name' => $firstName . ' ' . $lastName, 'email' => $email];
+    }
+
+    protected function getAllProductIds(ObjectManager $manager)
+    {
+        return $manager->getRepository('AppBundle:Product')->getAllProductIds();
+    }
+
+    protected function getRandomProductId(array $productArray)
+    {
+        if (empty($productArray))
+        {
+            return null;
+        }
+
+        $maxIndex = count($productArray) - 1;
+
+        return $productArray[rand(0, $maxIndex)];
     }
 }
