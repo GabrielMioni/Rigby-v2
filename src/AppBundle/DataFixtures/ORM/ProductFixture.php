@@ -18,7 +18,7 @@ class ProductFixture extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $productsRequested = 100;
+        $productsRequested = 10;
 
         $productNames = $this->buildProductNames($productsRequested);
         $productIds   = $this->buildProductIds($productsRequested);
