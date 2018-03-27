@@ -34,6 +34,7 @@ class ProductFixture extends Fixture
             $product->setDescription($productName);
             $product->setProductId($productId);
             $product->setPrice($price);
+            $product->setCreated( new \DateTime( date('Y-m-d H:i:s', time() ) ) );
 
             $manager->persist($product);
             $manager->flush();

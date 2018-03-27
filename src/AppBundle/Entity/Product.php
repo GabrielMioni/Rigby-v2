@@ -42,6 +42,10 @@ class Product
      */
     private $price;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
 
     /**
      * Get id
@@ -123,6 +127,22 @@ class Product
     public function getPrice()
     {
         return $this->price;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param mixed $created
+     */
+    public function setCreated($created)
+    {
+        $this->created = $created;
     }
 }
 
