@@ -31,6 +31,12 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $query = $qb->getQuery();
         $result = $query->getArrayResult();
 
-        return $result;
+        $out = array();
+
+        foreach ($result as $value) {
+            $out[] = $value['productId'];
+        }
+
+        return $out;
     }
 }
